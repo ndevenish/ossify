@@ -1,5 +1,6 @@
-from ossify import __version__
+from ossify.grammar import ScopeName
+from ossify.testutil import parse_string, parser_for
 
 
-def test_version():
-    assert __version__ == "0.1.0"
+def test_basic_defs():
+    pass

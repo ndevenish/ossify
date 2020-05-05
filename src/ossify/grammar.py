@@ -1,5 +1,7 @@
 from typing import List, NamedTuple
 
+breakpoint()
+
 
 class ScopeName(NamedTuple):
     parts: List[str]
@@ -35,3 +37,23 @@ def breakp(arg):
 
 def merge_tokens(tokens):
     breakpoint()
+    pass
+    # Flatten
+    tokens = [x[0][0] for x in tokens]
+    assert all(
+        t.start[0] == t.end[0] == tokens[0].start[0] for t in tokens
+    ), "Merging all from same line"
+    str_start = min(t.start[1] for t in tokens)
+    str_end = max(t.end[1] for t in tokens)
+    return tokens[0].line[str_start:str_end]
+    print(tokens)
+
+
+def cause_error(message, token=None):
+    if not token:
+        raise SyntaxError(message)
+    else:
+        starts = f"  {token.start[0]}: "
+        raise SyntaxError(
+            f"\n{starts}{token.line.rstrip()}\n{' '*(token.start[1]+len(starts))}^ {message}"
+        )
