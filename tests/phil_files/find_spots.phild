@@ -1,0 +1,872 @@
+output
+  .style = None
+  .help = None
+  .caption = None
+  .short_caption = None
+  .optional = None
+  .call = None
+  .multiple = None
+  .sequential_format = None
+  .disable_add = None
+  .disable_delete = None
+  .expert_level = None
+{
+  reflections = 'strong.refl'
+    .help = "The output filename"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = str
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  shoeboxes = True
+    .help = "Save the raw pixel values inside the reflection shoeboxes."
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = bool
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  experiments = None
+    .help = "Save the modified experiments. (usually only modified with hot"
+            "pixel mask)"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = str
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  log = 'dials.find_spots.log'
+    .help = "The log filename"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = str
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+}
+maximum_trusted_value = None
+  .help = "Override maximum trusted value for spot finding only"
+  .caption = None
+  .short_caption = None
+  .optional = None
+  .type = float(allow_none=True)
+  .multiple = None
+  .input_size = None
+  .style = None
+  .expert_level = 2
+per_image_statistics = False
+  .help = "Whether or not to print a table of per-image statistics."
+  .caption = None
+  .short_caption = None
+  .optional = None
+  .type = bool
+  .multiple = None
+  .input_size = None
+  .style = None
+  .expert_level = None
+spotfinder
+  .style = None
+  .help = "Parameters used in the spot finding algorithm."
+  .caption = None
+  .short_caption = None
+  .optional = None
+  .call = None
+  .multiple = None
+  .sequential_format = None
+  .disable_add = None
+  .disable_delete = None
+  .expert_level = None
+{
+  lookup
+    .style = None
+    .help = "Parameters specifying lookup file path"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .call = None
+    .multiple = None
+    .sequential_format = None
+    .disable_add = None
+    .disable_delete = None
+    .expert_level = None
+  {
+    mask = None
+      .help = "The path to the mask file."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = str
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+  }
+  write_hot_mask = False
+    .help = "Write the hot mask"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = bool
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  hot_mask_prefix = 'hot_mask'
+    .help = "Prefix for the hot mask pickle file"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = str
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  force_2d = False
+    .help = "Do spot finding in 2D"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = bool
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  scan_range = None
+    .help = "The range of images to use in finding spots. The ranges are"
+            "inclusive (e.g. j0 <= j < j1). For sequences the scan range is"
+            "interpreted as the literal scan range. Whereas for imagesets the"
+            "scan range is interpreted as the image number in the imageset."
+            "Multiple ranges can be specified by repeating the scan_range="
+            "parameter."
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = ints(size=2)
+    .multiple = True
+    .input_size = None
+    .style = None
+    .expert_level = None
+  region_of_interest = None
+    .help = "A region of interest to look for spots. Specified as: x0,x1,y0,y1"
+            "The pixels x0 and y0 are included in the range but the pixels x1"
+            "and y1 are not. To specify an ROI covering the whole image set"
+            "region_of_interest=0,width,0,height."
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = ints(size=4)
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  compute_mean_background = False
+    .help = "Compute the mean background for each image"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = bool
+    .multiple = None
+    .input_size = None
+    .style = None
+    .expert_level = None
+  filter
+    .style = None
+    .help = "Parameters used in the spot finding filter strategy."
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .call = None
+    .multiple = None
+    .sequential_format = None
+    .disable_add = None
+    .disable_delete = None
+    .expert_level = None
+  {
+    min_spot_size = Auto
+      .help = "The minimum number of contiguous pixels for a spot to be"
+              "accepted by the filtering algorithm."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = int(value_min=1, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    max_spot_size = 1000
+      .help = "The maximum number of contiguous pixels for a spot to be"
+              "accepted by the filtering algorithm."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = int(value_min=1)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    max_separation = 2
+      .help = "The maximum peak-to-centroid separation (in pixels) for a spot"
+              "to be accepted by the filtering algorithm."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = float(value_min=0, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = 1
+    max_strong_pixel_fraction = 0.25
+      .help = "If the fraction of pixels in an image marked as strong is"
+              "greater than this value, throw an exception"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = float(value_min=0, value_max=1, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    background_gradient
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = 2
+    {
+      filter = False
+        .help = None
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = bool
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      background_size = 2
+        .help = None
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = int(value_min=1, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      gradient_cutoff = 4
+        .help = None
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+    spot_density
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = 2
+    {
+      filter = False
+        .help = None
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = bool
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+    border = 0
+      .help = "The border around the edge of the image."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = int(allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    use_trusted_range = False
+      .help = "Use the trusted range to mask bad pixels."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = bool
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    d_min = None
+      .help = "The high resolution limit in Angstrom for a pixel to be"
+              "accepted by the filtering algorithm."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = float(value_min=0, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    d_max = None
+      .help = "The low resolution limit in Angstrom for a pixel to be accepted"
+              "by the filtering algorithm."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = float(value_min=0, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    resolution_range = None
+      .help = "an untrusted resolution range"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = floats(size=2)
+      .multiple = True
+      .input_size = None
+      .style = None
+      .expert_level = None
+    untrusted
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = True
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = None
+    {
+      panel = None
+        .help = "then the whole panel is masked out"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = int(allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      circle = None
+        .help = "An untrusted circle (xc, yc, r)"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = ints(size=3)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      rectangle = None
+        .help = "An untrusted rectangle (x0, x1, y0, y1)"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = ints(size=4)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      polygon = None
+        .help = "The pixel coordinates (fast, slow) that define the corners "
+                "of the untrusted polygon. Spots whose centroids fall within "
+                "the bounds of the untrusted polygon will be rejected."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = ints(value_min=0)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      pixel = None
+        .help = "An untrusted pixel (y, x)"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = ints(size=2, value_min=0)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+    ice_rings
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = None
+    {
+      filter = False
+        .help = None
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = bool
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      unit_cell = 4.498,4.498,7.338,90,90,120
+        .help = "The unit cell to generate d_spacings for powder rings."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = unit_cell
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+      space_group = 194
+        .help = "The space group used to generate d_spacings for powder rings."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = space_group
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+      width = 0.002
+        .help = "The width of an ice ring (in 1/d^2)."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+      d_min = None
+        .help = "The high resolution limit (otherwise use detector d_min)"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+    }
+  }
+  mp
+    .style = None
+    .help = None
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .call = None
+    .multiple = None
+    .sequential_format = None
+    .disable_add = None
+    .disable_delete = None
+    .expert_level = None
+  {
+    method = *none drmaa sge lsf pbs
+      .help = "The cluster method to use"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = choice
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    njobs = 1
+      .help = "The number of cluster jobs to use"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = int(value_min=1, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    nproc = 1
+      .help = "The number of processes to use per cluster job"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = int(value_min=1, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    chunksize = auto
+      .help = "The number of jobs to process per process"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = int(value_min=1, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    min_chunksize = 20
+      .help = "When chunksize is auto, this is the minimum chunksize"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = int(value_min=1, allow_none=True)
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+  }
+  threshold
+    .style = None
+    .help = "Extensions for threshold algorithms to be used in spot finding."
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .call = None
+    .multiple = None
+    .sequential_format = None
+    .disable_add = None
+    .disable_delete = None
+    .expert_level = None
+  {
+    algorithm = dispersion *dispersion_extended accelerated_dispersion
+      .help = "The choice of algorithm"
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .type = choice
+      .multiple = None
+      .input_size = None
+      .style = None
+      .expert_level = None
+    dispersion
+      .style = None
+      .help = "Extensions to do dispersion threshold."
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = None
+    {
+      gain = None
+        .help = "Use a flat gain map for the entire detector to act as a"
+                "multiplier for the gain set by the format. Cannot be used in"
+                "conjunction with lookup.gain_map parameter."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      kernel_size = 3 3
+        .help = "The size of the local area around the spot in which to"
+                "calculate the mean and variance. The kernel is given as a box"
+                "of size (2 * nx + 1, 2 * ny + 1) centred at the pixel."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = ints(size=2)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+      sigma_background = 6
+        .help = "The number of standard deviations of the index of dispersion"
+                "(variance / mean) in the local area below which the pixel"
+                "will be classified as background."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+      sigma_strong = 3
+        .help = "The number of standard deviations above the mean in the local"
+                "area above which the pixel will be classified as strong."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+      min_local = 2
+        .help = "The minimum number of pixels under the image processing"
+                "kernel that are need to do the thresholding operation."
+                "Setting the value between 2 and the total number of pixels"
+                "under the kernel will force the algorithm to use that number"
+                "as the minimum. If the value is less than or equal to zero,"
+                "then the algorithm will use all pixels under the kernel. In"
+                "effect this will add a border of pixels which are always"
+                "classed as background around the edge of the image and around"
+                "any masked out pixels."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = int(allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = 1
+      global_threshold = 0
+        .help = "The global threshold value. Consider all pixels less than"
+                "this value to be part of the background."
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+  }
+}
+input
+  .style = None
+  .help = None
+  .caption = None
+  .short_caption = None
+  .optional = None
+  .call = None
+  .multiple = None
+  .sequential_format = None
+  .disable_add = None
+  .disable_delete = None
+  .expert_level = None
+{
+  experiments = None
+    .help = "The experiment list file path"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .type = experiment_list
+    .multiple = True
+    .input_size = None
+    .style = None
+    .expert_level = None
+  tolerance
+    .style = None
+    .help = "Tolerances used to determine shared models"
+    .caption = None
+    .short_caption = None
+    .optional = None
+    .call = None
+    .multiple = None
+    .sequential_format = None
+    .disable_add = None
+    .disable_delete = None
+    .expert_level = 2
+  {
+    beam
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = None
+    {
+      wavelength = 1e-6
+        .help = "The wavelength tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      direction = 1e-6
+        .help = "The direction tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      polarization_normal = 1e-6
+        .help = "The polarization normal tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      polarization_fraction = 1e-6
+        .help = "The polarization fraction tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+    detector
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = None
+    {
+      fast_axis = 1e-6
+        .help = "The fast axis tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      slow_axis = 1e-6
+        .help = "The slow axis tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      origin = 5e-2
+        .help = "The origin tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+    goniometer
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = None
+    {
+      rotation_axis = 1e-6
+        .help = "The rotation axis tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      fixed_rotation = 1e-6
+        .help = "The fixed rotation tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+      setting_rotation = 1e-6
+        .help = "The setting rotation tolerance"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+    scan
+      .style = None
+      .help = None
+      .caption = None
+      .short_caption = None
+      .optional = None
+      .call = None
+      .multiple = None
+      .sequential_format = None
+      .disable_add = None
+      .disable_delete = None
+      .expert_level = None
+    {
+      oscillation = 0.01
+        .help = "The oscillation tolerance for the scan"
+        .caption = None
+        .short_caption = None
+        .optional = None
+        .type = float(value_min=0, allow_none=True)
+        .multiple = None
+        .input_size = None
+        .style = None
+        .expert_level = None
+    }
+  }
+}
+
