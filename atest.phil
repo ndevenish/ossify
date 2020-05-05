@@ -1,0 +1,8 @@
+options.something = 2
+    .help = "whaaaat"
+    .other = True
+    .description = "Some long description"
+        "a second line"
+    .number=4
+another.option = "some"
+file.name = file.mds

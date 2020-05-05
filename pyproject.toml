@@ -5,7 +5,7 @@ description = ""
 authors = ["Nicholas Devenish <ndevenish@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 pegen = "^0.0"
 
 [tool.poetry.dev-dependencies]
