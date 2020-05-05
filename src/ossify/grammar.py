@@ -1,6 +1,6 @@
-from typing import List, NamedTuple
+from __future__ import annotations
 
-breakpoint()
+from typing import Any, List, NamedTuple, Union
 
 
 class ScopeName(NamedTuple):
@@ -11,6 +11,22 @@ class ScopeName(NamedTuple):
     #     # breakpoint()
     # def __repr__(self):
     #     return f"ScopeName({self.parts!r})"
+
+
+ScopeOptions = dict
+DefinitionOptions = dict
+
+
+class Scope(NamedTuple):
+    name: str
+    options: ScopeOptions
+    children: List[Union[Scope, Definition]]  # type: ignore
+
+
+class Definition(NamedTuple):
+    name: str
+    assignment: Any
+    options: DefinitionOptions
 
 
 class ScopeDefinition(NamedTuple):
@@ -36,7 +52,8 @@ def breakp(arg):
 
 
 def merge_tokens(tokens):
-    breakpoint()
+    """Take a list of tokens and read the literal string they cover"""
+    # breakpoint()
     pass
     # Flatten
     tokens = [x[0][0] for x in tokens]

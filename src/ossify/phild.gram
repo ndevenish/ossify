@@ -1,51 +1,62 @@
 @subheader """
-from ossify.grammar import ScopeName, ScopeDefinition, combine_strings, breakp, merge_tokens, cause_error
+from ossify.grammar import Definition, ScopeName, ScopeDefinition, combine_strings, breakp, merge_tokens, cause_error
 """
-start: definitions ENDMARKER { definitions }
-definitions: (scope_definition [NEWLINE] { scope_definition })*
-scope_definition:
-    | scope_node_definition NEWLINE? '{' definitions '}'
-    | scope_node_definition
 
-scope_node_definition:
-    | scope_name expr=('=' expr { expr})? NEWLINE? opts=scope_options? { ScopeDefinition(scope_name, expr, opts)}
+start: scope_contents ENDMARKER
+scope_contents: scope_entry+
+scope_entry:
+    | scope
+    | definition
+
+scope:
+    | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
+    | scope_name NEWLINE* scope_options NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}'
 
 scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
+
+definition:
+    | scope_name '=' valueexpr NEWLINE [scope_options NEWLINE] { Definition(scope_name, "values", opt)}
+
+# scope: scope_name
+# definitions: (scope_definition [NEWLINE] { scope_definition })*
+# scope_definition:
+#     | scope_node_definition NEWLINE? '{' definitions '}'
+#     | scope_node_definition
+
+# scope_node_definition:
+#     | scope_name expr=('=' expr { expr})? NEWLINE? opts=scope_options? { ScopeDefinition(scope_name, expr, opts)}
+
 
 scope_options:
     | scope_options [NEWLINE] scope_option { {**scope_options, **scope_option} }
     | scope_option { scope_option }
 # Technically the option keywords don't have to be full expressions? Until we
 # are typing these, just use the generic behaviour for everything
-scope_option: "." option_keyword '=' expr { {option_keyword[0].string: expr}}
+scope_option: "." option_keyword '=' valueexpr { {option_keyword[0].string: valueexpr}}
 
-# A scope definition expression
-expr:
-    | type_call
-    | multiline_string
-    | option_choice_definition NEWLINE {option_choice_definition}
-    # Anything else is a string
-    | NUMBER { number.string }
-    | tok=(NAME|NUMBER|OP)+ { merge_tokens(tok) }
-    # token=(NAME | NUMBER | OP) { swallow_tokenizer_line(self, token, mark)}
+# Values can be anything, non-string token separation means separate
+# choices. Multiline strings can roll over a set of options after a
+# newline, but the new line must start with a non-number ('a="3" "4"\n4 "3")
+# is not valid. Maybe: something that is not a name or a number?
+valueexpr:
+    | valueexpr NEWLINE STRING valueexpr? { [*valueexpr, string, *(opt or [])]}
+    | valueexpr value { valueexpr + [value] }
+    | value { value }
+value:
+    | STRING
+    | NUMBER
+    | NAME
+    | tok='{' { cause_error('Cannot declare scope inline with value. Use quotes "{" to escape', tok)}
+    | OP
 
-# expr:
-#     | STRING { string.string }
-#     | NAME   { name.string }
-#     | NUMBER { number.string }
+# type_call: NAME '(' function_params ')'
+# function_params: function_argument (',' function_argument)+
+# function_argument: [NAME '='] (STRING | NAME | NUMBER)
 
-multiline_string:
-    | multiline_string NEWLINE? STRING {repr(multiline_string[1:-1] + "\n" + string.string[1:-1])}
-    | STRING    {string.string}
-
-type_call: NAME '(' function_params ')'
-function_params: function_argument (',' function_argument)+
-function_argument: [NAME '='] (STRING | NAME | NUMBER)
-
-option_choice_definition:
-    | option_choice_definition ['*'] NAME
-    | ['*'] NAME
+# option_choice_definition:
+#     | option_choice_definition ['*'] NAME
+#     | ['*'] NAME
 
 
 option_keyword: 'help' | 'caption' | 'short_caption' | 'optional' | 'type' | 'multiple' | 'input_size' | 'style' | 'expert_level' | NAME { cause_error(f"Unknown option parameter {name.string}", name) }
