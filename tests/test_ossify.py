@@ -36,12 +36,14 @@ def test_subscope():
     # assert parse_string("scope { options.b = 4 }") == simple_subscope
 
 
-def test_multiple_scope_definitions():
+def test_multiple_definitions_root_scope():
     defs = parse_string("a = 1\n  b = 2")
     assert len(defs.children) == 2
     assert all(isinstance(x, grammar.Definition) for x in defs.children)
 
-    root_scope = parse_string("scope {\n  a = 1\n  b = 2\n}")
+
+def test_multiple_scope_definitions():
+    root_scope = parse_string("scope {\n  a = 1\n  b = 2\n}", verbose=True)
     assert isinstance(root_scope.children[0], grammar.Scope)
     assert len(root_scope.children[0].children) == 2
     assert all(
