@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-import tokenize
 import io
-from typing import Any, List, NamedTuple, Union, Iterable
+import tokenize
+from typing import Any, Iterable, List, NamedTuple
 
 
 class ScopeName(NamedTuple):
     parts: List[str]
-    
+
     def __str__(self):
         return ".".join(self.parts)
+
 
 ScopeOptions = dict
 DefinitionOptions = dict
@@ -33,25 +34,26 @@ def _render_graph(stream, node, indent: str = "", last=True, first=True):
     indent = indent + second_i
     if hasattr(node, "children"):
         children = list(node.children)
-    elif  isinstance(node, Definition):
+    elif isinstance(node, Definition):
         children = list(node.assignment)
-    elif not isinstance(node, Iterable) or isinstance(node, str) or isinstance(node, tokenize.TokenInfo):
+    elif (
+        not isinstance(node, Iterable)
+        or isinstance(node, str)
+        or isinstance(node, tokenize.TokenInfo)
+    ):
         return
     else:
         children = list(node)
     for i, child in enumerate(children):
         _render_graph(
-            stream,
-            child,
-            indent=indent,
-            last=(i + 1) == len(children),
-            first=False,
+            stream, child, indent=indent, last=(i + 1) == len(children), first=False,
         )
+
 
 class Scope(NamedTuple):
     name: str
     options: ScopeOptions
-    children: List[Union[Scope, Definition]]  # type: ignore
+    children: List  # Should be Scope | Definition, but mypy crashes
 
     def print_scope(self):
         stream = io.StringIO()
@@ -60,6 +62,7 @@ class Scope(NamedTuple):
 
     def __str__(self):
         return f"Scope {self.name}"
+
 
 class Definition(NamedTuple):
     name: str
