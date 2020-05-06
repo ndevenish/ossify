@@ -11,6 +11,16 @@ def check_raises(content):
     return str(e.value)
 
 
+def test_empty_scope():
+    parse_string("a {}")
+
+
+def test_leading_newline():
+    test_scope = "a {\n  b = 1\n}"
+    parse_string(test_scope)
+    parse_string("\n" + test_scope)
+
+
 def test_parses():
     parse_string(
         """
