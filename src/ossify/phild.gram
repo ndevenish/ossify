@@ -26,7 +26,6 @@ end_def: NEWLINE | &'}' { True }
 scope_options:
     | scope_options [NEWLINE] scope_option { {**scope_options, **scope_option} }
     | scope_option { scope_option }
-
 # Technically the option keywords don't have to be full expressions? Until we
 # are typing these, just use the generic behaviour for everything
 scope_option: "." option_keyword '=' valueexpr { {option_keyword[0].string: valueexpr}}
@@ -55,7 +54,25 @@ value:
 #     | ['*'] NAME
 
 
-option_keyword: 'help' | 'caption' | 'short_caption' | 'optional' | 'type' | 'multiple' | 'input_size' | 'style' | 'expert_level' | NAME { cause_error(f"Unknown option parameter {name.string}", name) }
+option_keyword:
+    | 'help'
+    | 'caption'
+    | 'short_caption'
+    | 'optional'
+    | 'multiple'
+    | 'style'
+    | 'expert_level'
+    # These only happen on definitions
+    | 'type'
+    | 'input_size'
+    # These only happen on scopes
+    | 'call'
+    | 'sequential_format'
+    | 'disable_add'
+    | 'disable_delete'
+    | NAME { cause_error(f"Unknown option parameter {name.string}", name) }
+
+
     # | 'caption' '='
     #     .help = "The size of the local area around the spot in which to"
     #             "calculate the mean and variance. The kernel is given as a box"

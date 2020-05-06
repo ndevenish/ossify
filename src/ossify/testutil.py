@@ -26,7 +26,7 @@ def run_parser(file: IO[bytes], *, verbose: bool = False) -> Any:
     return result
 
 
-def parse_string(source: str, *, dedent: bool = True, verbose: bool = False) -> Any:
+def parse_string(source: str, *, dedent: bool = True, verbose: bool = True) -> Any:
     # Run the parser on a string.
     if dedent:
         source = textwrap.dedent(source)
