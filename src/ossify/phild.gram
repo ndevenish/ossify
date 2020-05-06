@@ -3,7 +3,7 @@ from ossify.grammar import Definition, ScopeName, Scope, combine_strings, breakp
 """
 
 start: scope_contents ENDMARKER { Scope("<root>", None, scope_contents)}
-scope_contents: contents=scope_entry+ { [x[0] for x in contents] }
+scope_contents: NEWLINE* contents=scope_entry+ { [x[0] for x in contents] }
 scope_entry:
     | scope { scope }
     | definition { definition }
