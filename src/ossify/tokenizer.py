@@ -37,13 +37,17 @@ class Tokenizer:
         cached = True
         while self._index == len(self._tokens):
             tok = next(self._tokengen)
-            if tok.type in (
-                tokenize.NL,
-                tokenize.COMMENT,
-                tokenize.INDENT,
-                tokenize.DEDENT,
-            ):
+            if tok.type in (tokenize.COMMENT, tokenize.INDENT, tokenize.DEDENT,):
                 continue
+            # Transform NL to NEWLINE
+            if tok.type == token.NL:
+                tok = tokenize.TokenInfo(
+                    token.NEWLINE,
+                    tok.string,
+                    start=tok.start,
+                    end=tok.end,
+                    line=tok.line,
+                )
             if tok.type == token.ERRORTOKEN and tok.string.isspace():
                 continue
             self._tokens.append(tok)
