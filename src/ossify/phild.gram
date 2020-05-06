@@ -1,22 +1,24 @@
 @subheader """
-from ossify.grammar import Definition, ScopeName, ScopeDefinition, combine_strings, breakp, merge_tokens, cause_error
+from ossify.grammar import Definition, ScopeName, Scope, combine_strings, breakp, merge_tokens, cause_error
 """
 
-start: scope_contents ENDMARKER
-scope_contents: scope_entry+
+start: scope_contents ENDMARKER { Scope("<root>", None, scope_contents)}
+scope_contents: contents=scope_entry+ { [x[0] for x in contents] }
 scope_entry:
-    | scope
-    | definition
+    | scope { scope }
+    | definition { definition }
 
 scope:
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
-    | scope_name NEWLINE* [scope_options] NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}' NEWLINE*
+    | scope_name NEWLINE* opts=[scope_options] NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}' NEWLINE* {
+                Scope(scope_name, opts, scope_contents)
+            }
 
 scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
 
 definition:
-    | scope_name '=' valueexpr [NEWLINE scope_options] end_def { Definition(scope_name, "values", opt)}
+    | scope_name '=' valueexpr [NEWLINE scope_options] end_def { Definition(scope_name, valueexpr, opt)}
 
 # newline or scope end - lookahead only fails to return value so fake
 end_def: NEWLINE | &'}' { True }

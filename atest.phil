@@ -8,4 +8,5 @@ another.option = "some"
 file.name = file.mds
 scope {
     options.b = 4
+    nother = 2
 }
