@@ -3,15 +3,17 @@
 import io
 import textwrap
 import tokenize
-from pathlib import Path
 from typing import IO, Any
 
-from pegen.testutil import make_parser
+from ossify.parser import GeneratedParser as _regenerated_parser
 
 from .tokenizer import Tokenizer
 
-with open(Path(__file__).parent / "phild.gram") as f:
-    _regenerated_parser = make_parser(f.read())
+# from pegen.testutil import make_parser
+
+
+# with open(Path(__file__).parent / "phild.gram") as f:
+#     _regenerated_parser = make_parser(f.read())
 
 
 def run_parser(file: IO[bytes], *, verbose: bool = False) -> Any:

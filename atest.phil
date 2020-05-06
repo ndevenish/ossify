@@ -6,3 +6,6 @@ options.something = some sort *of choice
     .short_caption=4
 another.option = "some"
 file.name = file.mds
+scope {
+    options.b = 4
+}

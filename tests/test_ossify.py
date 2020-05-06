@@ -1,6 +1,9 @@
 import pytest
-from ossify import grammar
-from ossify.testutil import parse_string, parser_for
+
+# from ossify import grammar
+from ossify.testutil import parse_string
+
+# , parser_for
 
 
 def check_raises(content):
@@ -25,6 +28,13 @@ def test_parses():
     parse_string("name = file.mds")
     # multiline string
     parse_string("a = 'a'\n'b'\n'c' 4")
+
+
+def test_subscope():
+    parse_string("scope {\n  options.b = 4\n}")
+    parse_string("scope { options.b = 4 }")
+    # TODO: Merge these tests as they should give an equivalent
+    # assert parse_string("scope { options.b = 4 }") == simple_subscope
 
 
 def test_things_that_dont_work():

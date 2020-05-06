@@ -10,27 +10,21 @@ scope_entry:
 
 scope:
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
-    | scope_name NEWLINE* scope_options NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}'
+    | scope_name NEWLINE* [scope_options] NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}' NEWLINE*
 
 scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
 
 definition:
-    | scope_name '=' valueexpr NEWLINE [scope_options NEWLINE] { Definition(scope_name, "values", opt)}
+    | scope_name '=' valueexpr [NEWLINE scope_options] end_def { Definition(scope_name, "values", opt)}
 
-# scope: scope_name
-# definitions: (scope_definition [NEWLINE] { scope_definition })*
-# scope_definition:
-#     | scope_node_definition NEWLINE? '{' definitions '}'
-#     | scope_node_definition
-
-# scope_node_definition:
-#     | scope_name expr=('=' expr { expr})? NEWLINE? opts=scope_options? { ScopeDefinition(scope_name, expr, opts)}
-
+# newline or scope end - lookahead only fails to return value so fake
+end_def: NEWLINE | &'}' { True }
 
 scope_options:
     | scope_options [NEWLINE] scope_option { {**scope_options, **scope_option} }
     | scope_option { scope_option }
+
 # Technically the option keywords don't have to be full expressions? Until we
 # are typing these, just use the generic behaviour for everything
 scope_option: "." option_keyword '=' valueexpr { {option_keyword[0].string: valueexpr}}
@@ -48,7 +42,7 @@ value:
     | NUMBER
     | NAME
     | tok='{' { cause_error('Cannot declare scope inline with value. Use quotes "{" to escape', tok)}
-    | OP
+    | !'}' OP
 
 # type_call: NAME '(' function_params ')'
 # function_params: function_argument (',' function_argument)+
