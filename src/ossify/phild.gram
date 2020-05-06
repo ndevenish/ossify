@@ -10,8 +10,8 @@ scope_entry:
 
 scope:
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
-    | scope_name NEWLINE* opts=[scope_options] NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}' NEWLINE* {
-                Scope(scope_name, opts, scope_contents)
+    | scope_name NEWLINE* opts=[scope_options] NEWLINE* '{' NEWLINE* cont=scope_contents? NEWLINE* '}' NEWLINE* {
+                Scope(scope_name, opts, cont)
             }
 
 scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
