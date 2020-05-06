@@ -4,26 +4,28 @@
 import ast
 import sys
 import tokenize
+
 from typing import Any, Optional
 
-from ossify.grammar import (Definition, ScopeDefinition, ScopeName, breakp,
-                            cause_error, combine_strings, merge_tokens)
-from pegen.parser import Parser, logger, memoize, memoize_left_rec
+from pegen.parser import memoize, memoize_left_rec, logger, Parser
 
+from ossify.grammar import Definition, ScopeName, ScopeDefinition, combine_strings, breakp, merge_tokens, cause_error
 
 class GeneratedParser(Parser):
+
     @memoize
     def start(self) -> Optional[Any]:
         # start: scope_contents $
         mark = self.mark()
         cut = False
-        if (scope_contents := self.scope_contents()) and (
-            endmarker := self.expect("ENDMARKER")
+        if (
+            (scope_contents := self.scope_contents())
+            and
+            (endmarker := self.expect('ENDMARKER'))
         ):
             return [scope_contents, endmarker]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
@@ -31,11 +33,12 @@ class GeneratedParser(Parser):
         # scope_contents: scope_entry+
         mark = self.mark()
         cut = False
-        if _loop1_1 := self._loop1_1():
+        if (
+            (_loop1_1 := self._loop1_1())
+        ):
             return [_loop1_1]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
@@ -43,55 +46,57 @@ class GeneratedParser(Parser):
         # scope_entry: scope | definition
         mark = self.mark()
         cut = False
-        if scope := self.scope():
+        if (
+            (scope := self.scope())
+        ):
             return [scope]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if definition := self.definition():
+        if (
+            (definition := self.definition())
+        ):
             return [definition]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
     def scope(self) -> Optional[Any]:
-        # scope: '{' | scope_name NEWLINE* scope_options NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}'
+        # scope: '{' | scope_name NEWLINE* scope_options? NEWLINE* '{' NEWLINE* scope_contents NEWLINE* '}' NEWLINE*
         mark = self.mark()
         cut = False
-        if tok := self.expect("{"):
-            return cause_error("Not allowed to declare anonymous scope", tok)
+        if (
+            (tok := self.expect('{'))
+        ):
+            return cause_error ( "Not allowed to declare anonymous scope" , tok )
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
         if (
             (scope_name := self.scope_name())
-            and (_loop0_2 := self._loop0_2(),)
-            and (scope_options := self.scope_options())
-            and (_loop0_3 := self._loop0_3(),)
-            and (literal := self.expect("{"))
-            and (_loop0_4 := self._loop0_4(),)
-            and (scope_contents := self.scope_contents())
-            and (_loop0_5 := self._loop0_5(),)
-            and (literal_1 := self.expect("}"))
+            and
+            (_loop0_2 := self._loop0_2(),)
+            and
+            (opt := self.scope_options(),)
+            and
+            (_loop0_3 := self._loop0_3(),)
+            and
+            (literal := self.expect('{'))
+            and
+            (_loop0_4 := self._loop0_4(),)
+            and
+            (scope_contents := self.scope_contents())
+            and
+            (_loop0_5 := self._loop0_5(),)
+            and
+            (literal_1 := self.expect('}'))
+            and
+            (_loop0_6 := self._loop0_6(),)
         ):
-            return [
-                scope_name,
-                _loop0_2,
-                scope_options,
-                _loop0_3,
-                literal,
-                _loop0_4,
-                scope_contents,
-                _loop0_5,
-                literal_1,
-            ]
+            return [scope_name, _loop0_2, opt, _loop0_3, literal, _loop0_4, scope_contents, _loop0_5, literal_1, _loop0_6]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize_left_rec
@@ -101,37 +106,63 @@ class GeneratedParser(Parser):
         cut = False
         if (
             (scope_name := self.scope_name())
-            and (literal := self.expect("."))
-            and (name := self.name())
+            and
+            (literal := self.expect("."))
+            and
+            (name := self.name())
         ):
-            return ScopeName(scope_name.parts + [name.string])
+            return ScopeName ( scope_name . parts + [ name . string ] )
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if name := self.name():
-            return ScopeName([name.string])
+        if (
+            (name := self.name())
+        ):
+            return ScopeName ( [ name . string ] )
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
     def definition(self) -> Optional[Any]:
-        # definition: scope_name '=' valueexpr NEWLINE [scope_options NEWLINE]
+        # definition: scope_name '=' valueexpr [NEWLINE scope_options] end_def
         mark = self.mark()
         cut = False
         if (
             (scope_name := self.scope_name())
-            and (literal := self.expect("="))
-            and (valueexpr := self.valueexpr())
-            and (newline := self.expect("NEWLINE"))
-            and (opt := self._tmp_6(),)
+            and
+            (literal := self.expect('='))
+            and
+            (valueexpr := self.valueexpr())
+            and
+            (opt := self._tmp_7(),)
+            and
+            (end_def := self.end_def())
         ):
-            return Definition(scope_name, "values", opt)
+            return Definition ( scope_name , "values" , opt )
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
+        return None
+
+    @memoize
+    def end_def(self) -> Optional[Any]:
+        # end_def: NEWLINE | &'}'
+        # nullable=True
+        mark = self.mark()
+        cut = False
+        if (
+            (newline := self.expect('NEWLINE'))
+        ):
+            return [newline]
+        self.reset(mark)
+        if cut: return None
+        cut = False
+        if (
+            self.positive_lookahead(self.expect, '}')
+        ):
+            return True
+        self.reset(mark)
+        if cut: return None
         return None
 
     @memoize_left_rec
@@ -141,19 +172,21 @@ class GeneratedParser(Parser):
         cut = False
         if (
             (scope_options := self.scope_options())
-            and (opt := self.expect("NEWLINE"),)
-            and (scope_option := self.scope_option())
+            and
+            (opt := self.expect('NEWLINE'),)
+            and
+            (scope_option := self.scope_option())
         ):
-            return {**scope_options, **scope_option}
+            return {** scope_options , ** scope_option}
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if scope_option := self.scope_option():
+        if (
+            (scope_option := self.scope_option())
+        ):
             return scope_option
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
@@ -163,14 +196,16 @@ class GeneratedParser(Parser):
         cut = False
         if (
             (literal := self.expect("."))
-            and (option_keyword := self.option_keyword())
-            and (literal_1 := self.expect("="))
-            and (valueexpr := self.valueexpr())
+            and
+            (option_keyword := self.option_keyword())
+            and
+            (literal_1 := self.expect('='))
+            and
+            (valueexpr := self.valueexpr())
         ):
-            return {option_keyword[0].string: valueexpr}
+            return {option_keyword [ 0 ] . string : valueexpr}
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize_left_rec
@@ -180,64 +215,75 @@ class GeneratedParser(Parser):
         cut = False
         if (
             (valueexpr := self.valueexpr())
-            and (newline := self.expect("NEWLINE"))
-            and (string := self.string())
-            and (opt := self.valueexpr(),)
+            and
+            (newline := self.expect('NEWLINE'))
+            and
+            (string := self.string())
+            and
+            (opt := self.valueexpr(),)
         ):
-            return [*valueexpr, string, *(opt or [])]
+            return [ * valueexpr , string , * ( opt or [ ] ) ]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if (valueexpr := self.valueexpr()) and (value := self.value()):
-            return valueexpr + [value]
+        if (
+            (valueexpr := self.valueexpr())
+            and
+            (value := self.value())
+        ):
+            return valueexpr + [ value ]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if value := self.value():
+        if (
+            (value := self.value())
+        ):
             return value
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
     def value(self) -> Optional[Any]:
-        # value: STRING | NUMBER | NAME | '{' | OP
+        # value: STRING | NUMBER | NAME | '{' | !'}' OP
         mark = self.mark()
         cut = False
-        if string := self.string():
+        if (
+            (string := self.string())
+        ):
             return [string]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if number := self.number():
+        if (
+            (number := self.number())
+        ):
             return [number]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if name := self.name():
+        if (
+            (name := self.name())
+        ):
             return [name]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if tok := self.expect("{"):
-            return cause_error(
-                'Cannot declare scope inline with value. Use quotes "{" to escape', tok
-            )
+        if (
+            (tok := self.expect('{'))
+        ):
+            return cause_error ( 'Cannot declare scope inline with value. Use quotes "{" to escape' , tok )
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if op := self.op():
+        if (
+            self.negative_lookahead(self.expect, '}')
+            and
+            (op := self.op())
+        ):
             return [op]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
@@ -245,65 +291,75 @@ class GeneratedParser(Parser):
         # option_keyword: 'help' | 'caption' | 'short_caption' | 'optional' | 'type' | 'multiple' | 'input_size' | 'style' | 'expert_level' | NAME
         mark = self.mark()
         cut = False
-        if literal := self.expect("help"):
+        if (
+            (literal := self.expect('help'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("caption"):
+        if (
+            (literal := self.expect('caption'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("short_caption"):
+        if (
+            (literal := self.expect('short_caption'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("optional"):
+        if (
+            (literal := self.expect('optional'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("type"):
+        if (
+            (literal := self.expect('type'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("multiple"):
+        if (
+            (literal := self.expect('multiple'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("input_size"):
+        if (
+            (literal := self.expect('input_size'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("style"):
+        if (
+            (literal := self.expect('style'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if literal := self.expect("expert_level"):
+        if (
+            (literal := self.expect('expert_level'))
+        ):
             return [literal]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         cut = False
-        if name := self.name():
-            return cause_error(f"Unknown option parameter {name.string}", name)
+        if (
+            (name := self.name())
+        ):
+            return cause_error ( f"Unknown option parameter {name.string}" , name )
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
     @memoize
@@ -312,12 +368,13 @@ class GeneratedParser(Parser):
         mark = self.mark()
         children = []
         cut = False
-        while scope_entry := self.scope_entry():
+        while (
+            (scope_entry := self.scope_entry())
+        ):
             children.append([scope_entry])
             mark = self.mark()
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return children
 
     @memoize
@@ -326,12 +383,13 @@ class GeneratedParser(Parser):
         mark = self.mark()
         children = []
         cut = False
-        while newline := self.expect("NEWLINE"):
+        while (
+            (newline := self.expect('NEWLINE'))
+        ):
             children.append([newline])
             mark = self.mark()
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return children
 
     @memoize
@@ -340,12 +398,13 @@ class GeneratedParser(Parser):
         mark = self.mark()
         children = []
         cut = False
-        while newline := self.expect("NEWLINE"):
+        while (
+            (newline := self.expect('NEWLINE'))
+        ):
             children.append([newline])
             mark = self.mark()
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return children
 
     @memoize
@@ -354,12 +413,13 @@ class GeneratedParser(Parser):
         mark = self.mark()
         children = []
         cut = False
-        while newline := self.expect("NEWLINE"):
+        while (
+            (newline := self.expect('NEWLINE'))
+        ):
             children.append([newline])
             mark = self.mark()
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return children
 
     @memoize
@@ -368,30 +428,46 @@ class GeneratedParser(Parser):
         mark = self.mark()
         children = []
         cut = False
-        while newline := self.expect("NEWLINE"):
+        while (
+            (newline := self.expect('NEWLINE'))
+        ):
             children.append([newline])
             mark = self.mark()
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return children
 
     @memoize
-    def _tmp_6(self) -> Optional[Any]:
-        # _tmp_6: scope_options NEWLINE
+    def _loop0_6(self) -> Optional[Any]:
+        # _loop0_6: NEWLINE
+        mark = self.mark()
+        children = []
+        cut = False
+        while (
+            (newline := self.expect('NEWLINE'))
+        ):
+            children.append([newline])
+            mark = self.mark()
+        self.reset(mark)
+        if cut: return None
+        return children
+
+    @memoize
+    def _tmp_7(self) -> Optional[Any]:
+        # _tmp_7: NEWLINE scope_options
         mark = self.mark()
         cut = False
-        if (scope_options := self.scope_options()) and (
-            newline := self.expect("NEWLINE")
+        if (
+            (newline := self.expect('NEWLINE'))
+            and
+            (scope_options := self.scope_options())
         ):
-            return [scope_options, newline]
+            return [newline, scope_options]
         self.reset(mark)
-        if cut:
-            return None
+        if cut: return None
         return None
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     from pegen.parser import simple_parser_main
-
     simple_parser_main(GeneratedParser)
