@@ -1,6 +1,5 @@
 import pytest
-
-# from ossify import grammar
+from ossify import grammar
 from ossify.testutil import parse_string
 
 # , parser_for
@@ -35,6 +34,21 @@ def test_subscope():
     parse_string("scope { options.b = 4 }")
     # TODO: Merge these tests as they should give an equivalent
     # assert parse_string("scope { options.b = 4 }") == simple_subscope
+
+
+def test_multiple_scope_definitions():
+    defs = parse_string("a = 1\n  b = 2")
+    assert len(defs.children) == 2
+    assert all(isinstance(x, grammar.Definition) for x in defs.children)
+
+    root_scope = parse_string("scope {\n  a = 1\n  b = 2\n}")
+    assert isinstance(root_scope.children[0], grammar.Scope)
+    assert len(root_scope.children[0].children) == 2
+    assert all(
+        isinstance(x, grammar.Definition) for x in root_scope.children[0].children
+    )
+    assert str(root_scope.children[0].children[0].name) == "a"
+    assert str(root_scope.children[0].children[1].name) == "b"
 
 
 def test_things_that_dont_work():
