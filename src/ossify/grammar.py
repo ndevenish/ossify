@@ -72,7 +72,7 @@ class Definition(NamedTuple):
     options: DefinitionOptions
 
     def __str__(self):
-        return f"Definition {self.name} = {len(self.assignment)}"
+        return f"Definition {self.name} = [{len(self.assignment)} values] {self.options if self.options else ''}"
 
 
 def combine_strings(parts):
@@ -145,10 +145,10 @@ def merge_tokens(*tokenlists):
     tokens = flatten_tokens(*tokenlists)
     merged = tokens[0]
     for token in tokens[1:]:
-        # contiguous
-        assert token.start[1] == (merged.end[1] + 1) or token.start[0] == (
-            merged.end[1] + 1
-        )
+        # contiguous - disable for now as bad tokenization
+        # assert token.start[1] == (merged.end[1] + 1) or token.start[0] == (
+        #     merged.end[0] + 1
+        # )
         merged = TokenInfo(
             type=merged.type,
             string=merged.string + token.string,

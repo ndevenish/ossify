@@ -33,7 +33,8 @@ def parse_string(source: str, *, dedent: bool = True, verbose: bool = True) -> A
     if dedent:
         source = textwrap.dedent(source)
     file = io.StringIO(source)
-    return run_parser(file, verbose=verbose)  # type: ignore # typeshed issue #3515
+    result = run_parser(file, verbose=verbose)  # type: ignore # typeshed issue #3515
+    result.print_scope()
 
 
 def parser_for(source: str, *, dedent: bool = True, verbose: bool = False) -> Any:

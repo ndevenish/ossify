@@ -28,7 +28,7 @@ scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
 
 definition:
-    | scope_name ws? '=' ws? valueexpr [div scope_options] end_def { Definition(scope_name, valueexpr, opt)}
+    | scope_name ws? '=' ws? valueexpr so=[div scope_options { scope_options}] end_def { Definition(scope_name, valueexpr, so)}
 
 # newline or scope end - lookahead only fails to return value so fake
 end_def: div | &'}' { True }
@@ -39,7 +39,7 @@ scope_options:
 
 # Technically the option keywords don't have to be full expressions? Until we
 # are typing these, just use the generic behaviour for everything
-scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: valueexpr}}
+scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: merge_tokens(valueexpr)}}
 
 # Values can be anything, non-string token separation means separate
 # choices. Multiline strings can roll over a set of options after a

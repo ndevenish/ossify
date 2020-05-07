@@ -112,7 +112,7 @@ def test_badquote_multiline_string_2():
 
 def test_multiline_string_dedent():
     # This test case causes tokenizer problems
-    parse_string(
+    r = parse_string(
         """require_images = True
   .help = "Flag which can be set to False to launch image viewer without
      "
@@ -120,6 +120,7 @@ def test_multiline_string_dedent():
  "
  """
     )
+    r.print_scope()
 
 
 def test_multiple_newline():
