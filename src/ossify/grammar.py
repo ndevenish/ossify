@@ -89,21 +89,34 @@ def breakp(arg):
 
 def merge_bad_multiline_string(tokens):
     """Merge a multiline series of tokens into one string"""
-    # Form is [quote, (others), quote], discard the quote because we will add manually
+    # Form is [quote, (others), quote]. We need to keep the quotes because
+    # they may be on their own line with indents
     assert tokens[0].string == tokens[-1].string
-    parts = [x[0][0] for x in tokens[1]]
+    parts = [tokens[0]] + [x[0][0] for x in tokens[1]] + [tokens[-1]]
 
     # Validate that we have an entry for every line this covers
     # otherwise we don't have the line data to reconstruct
     all_lines = set(x.start[0] for x in parts)
-    assert all_lines == set(range(min(all_lines), max(all_lines) + 1))
+    line_start, line_end = min(all_lines), max(all_lines)
+    assert all_lines == set(range(line_start, line_end + 1))
 
     composite = []
-    for _, tokens in groupby(parts, lambda x: x.start[0]):
-        composite.append(merge_line_tokens(list(tokens)))
+    for line, tokens in groupby(parts, lambda x: x.start[0]):
+        tokens = list(tokens)
+        if line == line_start:
+            composite.append(tokens[0].line[tokens[0].start[1] :])
+        else:
+            # Subsequent lines miss indent tokens
+            # - we should always have a line end token that covers the
+            # whole active line (what about comments? supported?)
+            composite.append(tokens[0].line[: tokens[-1].end[1]])
 
-    print("MERGING MULTILINE STRING: " + repr("".join(composite)))
-    return ['"""' + "".join(composite) + '"""']
+        # composite.append(merge_line_tokens(list(tokens)))
+
+    # Merge and strip the quotes off here
+    full_line = "".join(composite)[1:-1]
+    # print(f"\033[1mMERGING MULTILINE STRING: {full_line!r}\033[0m")
+    return [f'"""{full_line}"""']
 
 
 def merge_line_tokens(tokens):

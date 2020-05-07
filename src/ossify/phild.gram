@@ -32,10 +32,10 @@ scope_option: "." option_keyword '=' valueexpr { {option_keyword[0].string: valu
 
 # Values can be anything, non-string token separation means separate
 # choices. Multiline strings can roll over a set of options after a
-# newline, but the new line must start with a non-number ('a="3" "4"\n4 "3")
-# is not valid. Maybe: something that is not a name or a number?
+# newline, but the new line must start with a string ('a="3" "4"\n4 "3")
+# or is not valid. Maybe: something that is not a name or a number?
 valueexpr:
-    | valueexpr NEWLINE STRING valueexpr? { [*valueexpr, string, *(opt or [])]}
+    | valueexpr NEWLINE valuestring valueexpr? { [*valueexpr, valuestring, *(opt or [])]}
     | valueexpr value { valueexpr + [value] }
     | value { value }
 value:
@@ -47,6 +47,11 @@ value:
     | bad_python_string { merge_bad_multiline_string(bad_python_string) }
     # Anything else that isn't a scope close, handle
     | !'}' OP
+# Because string can be "string" or "bad string" we test both together for
+# continuations
+valuestring:
+    | STRING
+    | bad_python_string { merge_bad_multiline_string(bad_python_string) }
 
 # Rules for parsing a multiline string where single quote is used. This
 # makes it through the tokenizer as an error state, so we should be able
