@@ -108,3 +108,8 @@ def test_badquote_multiline_string_2():
           "the data are scaled."
         """
     )
+
+
+def test_multiple_newline():
+    parse_string("something = 3\n\nanother = 4")
+    parse_string("something {\n}\n\nanother{}")
