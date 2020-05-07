@@ -84,15 +84,27 @@ def test_options():
 def test_badquote_multiline_string():
     # Even if defined as """ string, prints self as a single quoted string
     # - although can parse this so technically part of the spec
-    result = parse_string(
+    parse_string(
         """experiments = None
     .help = "The output experiment list file name.
             If None, don't"
             "output an experiment list file.\""""
     )
-    result = parse_string(
+    parse_string(
         """experiments = None
     .help = 'The output experiment list file name.
             If None, dont'
             "output an experiment list file.\""""
+    )
+
+
+def test_badquote_multiline_string_2():
+    parse_string(
+        """intensities = "Choice of which intensities to export. Allowed combinations:
+      "
+          "     scale, profile, sum, profile+sum, sum+profile+scale. Auto"
+          "will
+            default to scale or profile+sum depending on if"
+          "the data are scaled."
+        """
     )
