@@ -79,3 +79,14 @@ def test_string_continuation():
 def test_options():
     parse_string("a = 2\n  .caption='goodoption'")
     assert "unknown option" in check_raises("a = 2\n .badoption = 3").lower()
+
+
+def test_badquote_multiline_string():
+    # Even if defined as """ string, prints self as a single quoted string
+    # - although can parse this so technically part of the spec
+    result = parse_string(
+        """experiments = None
+    .help = "The output experiment list file name.
+            If None, don't"
+            "output an experiment list file.\""""
+    )

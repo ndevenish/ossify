@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import tokenize
+from itertools import groupby
 from typing import Any, Iterable, List, NamedTuple
 
 
@@ -86,19 +87,33 @@ def breakp(arg):
 #     breakpoint()
 
 
-def merge_tokens(tokens):
+def merge_bad_multiline_string(tokens):
+    """Merge a multiline series of tokens into one string"""
+    # Form is [quote, (others), quote], discard the quote because we will add manually
+    assert tokens[0].string == tokens[-1].string
+    parts = [x[0][0] for x in tokens[1]]
+
+    # Validate that we have an entry for every line this covers
+    # otherwise we don't have the line data to reconstruct
+    all_lines = set(x.start[0] for x in parts)
+    assert all_lines == set(range(min(all_lines), max(all_lines) + 1))
+
+    composite = []
+    for _, tokens in groupby(parts, lambda x: x.start[0]):
+        composite.append(merge_line_tokens(list(tokens)))
+
+    print("MERGING MULTILINE STRING: " + repr("".join(composite)))
+    return ['"""' + "".join(composite) + '"""']
+
+
+def merge_line_tokens(tokens):
     """Take a list of tokens and read the literal string they cover"""
-    # breakpoint()
-    pass
-    # Flatten
-    tokens = [x[0][0] for x in tokens]
     assert all(
         t.start[0] == t.end[0] == tokens[0].start[0] for t in tokens
     ), "Merging all from same line"
     str_start = min(t.start[1] for t in tokens)
     str_end = max(t.end[1] for t in tokens)
     return tokens[0].line[str_start:str_end]
-    print(tokens)
 
 
 def cause_error(message, token=None):
