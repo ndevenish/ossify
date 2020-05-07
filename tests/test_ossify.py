@@ -90,3 +90,9 @@ def test_badquote_multiline_string():
             If None, don't"
             "output an experiment list file.\""""
     )
+    result = parse_string(
+        """experiments = None
+    .help = 'The output experiment list file name.
+            If None, dont'
+            "output an experiment list file.\""""
+    )
