@@ -35,6 +35,7 @@ def parse_string(source: str, *, dedent: bool = True, verbose: bool = True) -> A
     file = io.StringIO(source)
     result = run_parser(file, verbose=verbose)  # type: ignore # typeshed issue #3515
     result.print_scope()
+    return result
 
 
 def parser_for(source: str, *, dedent: bool = True, verbose: bool = False) -> Any:
