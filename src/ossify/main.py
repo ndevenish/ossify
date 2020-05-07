@@ -2,7 +2,6 @@ import argparse
 import sys
 import time
 import token
-import tokenize
 import traceback
 from pprint import pprint
 from typing import Type
@@ -10,7 +9,7 @@ from typing import Type
 from ossify.parser import GeneratedParser
 
 # from pegen.tokenizer import Tokenizer
-from ossify.tokenizer import Tokenizer
+from ossify.tokenizer import Tokenizer, character_generator
 from pegen.parser import Parser
 
 
@@ -42,7 +41,8 @@ def simple_parser_main(parser_class: Type[Parser]) -> None:
     else:
         file = open(args.filename)
     try:
-        tokengen = tokenize.generate_tokens(file.readline)
+        # tokengen = tokenize.generate_tokens(file.readline)
+        tokengen = character_generator(file)
         tokenizer = Tokenizer(tokengen, verbose=verbose_tokenizer)
         parser = parser_class(tokenizer, verbose=verbose_parser)
         tree = parser.start()

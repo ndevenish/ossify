@@ -1,15 +1,25 @@
 @subheader """
-from ossify.grammar import Definition, ScopeName, Scope, combine_strings, breakp, cause_error, merge_bad_multiline_string
+from ossify.grammar import Definition, ScopeName, Scope, combine_strings, breakp, cause_error, merge_bad_multiline_string, flatten_tokens, merge_tokens
 """
 
+# NAME: Something that could be an identifier
+# NUMBER: 0123456789
+# STRING: Anything quoted
+# OP: Everything else
+
+# Generic tools
+# ws: spaces and newlines
+# sep; spaces, newlines and ;'s
+# ident: valid python identifier
+
 start: scope_contents ENDMARKER { Scope("<root>", None, scope_contents)}
-scope_contents: NEWLINE* contents=scope_entry+ { [x[0] for x in contents] }
+scope_contents: contents=scope_entry+ { [x[0] for x in contents] }
 scope_entry:
-    | NEWLINE* scope { scope }
-    | NEWLINE* definition { definition }
+    | ws? scope { scope }
+    | ws? definition { definition }
 
 scope:
-    | scope_name NEWLINE* opts=[scope_options] NEWLINE* '{' NEWLINE* cont=scope_contents? NEWLINE* '}' NEWLINE* {
+    | scope_name opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* {
                 Scope(scope_name, opts, cont)
             }
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
@@ -18,24 +28,25 @@ scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
 
 definition:
-    | scope_name '=' valueexpr [NEWLINE scope_options] end_def { Definition(scope_name, valueexpr, opt)}
+    | scope_name ws? '=' ws? valueexpr [div scope_options] end_def { Definition(scope_name, valueexpr, opt)}
 
 # newline or scope end - lookahead only fails to return value so fake
-end_def: NEWLINE | &'}' { True }
+end_def: div | &'}' { True }
 
 scope_options:
-    | scope_options [NEWLINE] scope_option { {**scope_options, **scope_option} }
+    | scope_options div scope_option { {**scope_options, **scope_option} }
     | scope_option { scope_option }
+
 # Technically the option keywords don't have to be full expressions? Until we
 # are typing these, just use the generic behaviour for everything
-scope_option: "." option_keyword '=' valueexpr { {option_keyword[0].string: valueexpr}}
+scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: valueexpr}}
 
 # Values can be anything, non-string token separation means separate
 # choices. Multiline strings can roll over a set of options after a
 # newline, but the new line must start with a string ('a="3" "4"\n4 "3")
 # or is not valid. Maybe: something that is not a name or a number?
 valueexpr:
-    | valueexpr NEWLINE valuestring valueexpr? { [*valueexpr, valuestring, *(opt or [])]}
+    | valueexpr " "* NEWLINE " "* STRING valueexpr? { [*valueexpr, string, *(opt or [])]}
     | valueexpr value { valueexpr + [value] }
     | value { value }
 value:
@@ -44,24 +55,38 @@ value:
     | NAME
     | tok='{' { cause_error('Cannot declare scope inline with value. Use quotes "{" to escape', tok)}
     # We need to handle the error case where a multiline string with single quotes
-    | bad_python_string { merge_bad_multiline_string(bad_python_string) }
+    # | bad_python_string { merge_bad_multiline_string(bad_python_string) }
     # Anything else that isn't a scope close, handle
     | !'}' OP
 # Because string can be "string" or "bad string" we test both together for
 # continuations
-valuestring:
-    | STRING
-    | bad_python_string { merge_bad_multiline_string(bad_python_string) }
+# valuestring:
+#     | STRING
+    # | bad_python_string { merge_bad_multiline_string(bad_python_string) }
 
 # Rules for parsing a multiline string where single quote is used. This
 # makes it through the tokenizer as an error state, so we should be able
 # to patch something together.
 # We swallow STRING values because this I believe this implies an open
 # and close on the same line, so would have been expected to be part
-bad_python_string:
-    | '"' (STRING | NUMBER | NAME | !'"' OP | "'" | NEWLINE)+ '"'
-    | "'" (STRING | NUMBER | NAME | !"'" OP | '"' | NEWLINE)+ "'"
+# bad_python_string:
+#     | '"' (STRING | NUMBER | NAME | !'"' OP | "'" | NEWLINE)+ '"'
+#     | "'" (STRING | NUMBER | NAME | !"'" OP | '"' | NEWLINE)+ "'"
 
+# Lexing rules
+# ident: head=NAME tail=(NAME | NUMBER)* { breakp(merge_tokens(head, tail)) }
+ws: (NEWLINE | " ")+
+# sep means token separation - whitespace, or semicolon (one at most)
+sep:
+    | ws? ";" ws?
+    | ws
+# div means division of expressions - a newline or semicolon
+div: " "* (NEWLINE | ';') ws?
+
+# Parsing definition values - anything not '{};' can be in value
+stringlike:
+    | stringlike (NAME | !"}" !"{" !";" !" " OP | NUMBER | STRING)
+    | STRING
 
 option_keyword:
     | 'help'
@@ -80,3 +105,4 @@ option_keyword:
     | 'disable_add'
     | 'disable_delete'
     | NAME { cause_error(f"Unknown option parameter {name.string}", name) }
+

@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import tokenize
 from itertools import groupby
+from tokenize import TokenInfo
 from typing import Any, Iterable, List, NamedTuple
 
 
@@ -79,6 +80,7 @@ def combine_strings(parts):
 
 
 def breakp(arg):
+    print("Arg is: \033[32m", arg, "\033[0m")
     breakpoint()
     return arg
 
@@ -137,3 +139,33 @@ def cause_error(message, token=None):
         raise SyntaxError(
             f"\n{starts}{token.line.rstrip()}\n{' '*(token.start[1]+len(starts))}^ {message}"
         )
+
+
+def merge_tokens(*tokenlists):
+    tokens = flatten_tokens(*tokenlists)
+    merged = tokens[0]
+    for token in tokens[1:]:
+        # contiguous
+        assert token.start[1] == (merged.end[1] + 1) or token.start[0] == (
+            merged.end[1] + 1
+        )
+        merged = TokenInfo(
+            type=merged.type,
+            string=merged.string + token.string,
+            start=merged.start,
+            end=token.end,
+            line=merged.line,
+        )
+    return merged
+
+
+def flatten_tokens(*tokenlists):
+    flat = []
+    for entry in tokenlists:
+        if isinstance(entry, list):
+            # print("recursing", entry)
+            for subentry in entry:
+                flat.extend(flatten_tokens(subentry))
+        else:
+            flat.append(entry)
+    return flat

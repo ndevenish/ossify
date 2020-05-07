@@ -110,6 +110,30 @@ def test_badquote_multiline_string_2():
     )
 
 
+def test_multiline_string_dedent():
+    # This test case causes tokenizer problems
+    parse_string(
+        """require_images = True
+  .help = "Flag which can be set to False to launch image viewer without
+     "
+          "checking the image format (needed for some image format classes).
+ "
+ """
+    )
+
+
 def test_multiple_newline():
     parse_string("something = 3\n\nanother = 4")
     parse_string("something {\n}\n\nanother{}")
+
+
+def test_escaped_line():
+    parse_string(
+        """display = *image mean variance dispersion sigma_b sigma_s threshold \
+          global_threshold
+  .help = None"""
+    )
+
+
+# to test:
+# Line terminations: """a.some = 3; .help=help"""

@@ -7,7 +7,7 @@ from typing import IO, Any
 
 from ossify.parser import GeneratedParser as _regenerated_parser
 
-from .tokenizer import Tokenizer
+from .tokenizer import Tokenizer, character_generator
 
 # from pegen.testutil import make_parser
 
@@ -18,7 +18,9 @@ from .tokenizer import Tokenizer
 
 def run_parser(file: IO[bytes], *, verbose: bool = False) -> Any:
     # Run a parser on a file (stream).
-    tokenizer = Tokenizer(tokenize.generate_tokens(file.readline))  # type: ignore # typeshed issue #3515
+    # tokenizer = Tokenizer(tokenize.generate_tokens(file.readline))  # type: ignore # typeshed issue #3515
+    tokenizer = Tokenizer(character_generator(file))  # type: ignore # typeshed issue #3515
+
     parser = _regenerated_parser(tokenizer, verbose=verbose)
     result = parser.start()
     if result is None:
