@@ -62,14 +62,6 @@ bad_python_string:
     | '"' (STRING | NUMBER | NAME | !'"' OP | "'" | NEWLINE)+ '"'
     | "'" (STRING | NUMBER | NAME | !"'" OP | '"' | NEWLINE)+ "'"
 
-# type_call: NAME '(' function_params ')'
-# function_params: function_argument (',' function_argument)+
-# function_argument: [NAME '='] (STRING | NAME | NUMBER)
-
-# option_choice_definition:
-#     | option_choice_definition ['*'] NAME
-#     | ['*'] NAME
-
 
 option_keyword:
     | 'help'
@@ -88,24 +80,3 @@ option_keyword:
     | 'disable_add'
     | 'disable_delete'
     | NAME { cause_error(f"Unknown option parameter {name.string}", name) }
-
-
-    # | 'caption' '='
-    #     .help = "The size of the local area around the spot in which to"
-    #             "calculate the mean and variance. The kernel is given as a box"
-    #             "of size (2 * nx + 1, 2 * ny + 1) centred at the pixel."
-    #     .caption = None
-    #     .short_caption = None
-    #     .optional = None
-    #     .type = ints(size=2)
-    #     .multiple = None
-    #     .input_size = None
-    #     .style = None
-    #     .expert_level = 1
-# include: 'include' ('scope' | 'file') (scope_name | STRING)
-
-# definition: scope_name ['=' expr]
-
-
-
-#name [= default_options]?
