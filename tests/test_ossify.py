@@ -142,6 +142,12 @@ def test_comment():
     parse_string("some = 3 # comment\n# another comment\nb = 3\n#after")
     # not comment
     parse_string("some = 3# comment")
+    parse_string("a #comment\n{}")
+    parse_string("a #comment\n{#somment\nb=2 # comment\nc = 3# not comment}#after")
+    parse_string(
+        "#comment\n# comment\na #comment\n{#somment\nb=2 # comment\nc = 3# not comment\n}"
+    )
+    parse_string("d=a b c # 1 {2} 3 \\\n4 {5 6}}")
 
 
 def test_close_semicolon():

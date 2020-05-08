@@ -64,8 +64,7 @@ def character_generator(file_interface, encoding="utf-8", verbose=False):
             if verbose:
                 print("Escaped newline")
             pos += 2
-        elif data[pos] == "#":
-            pos = line_end
+            line_no += 1
         elif match := reWhitespace.match(data, pos=pos):
             newlines = match.group().count("\n")
             if "\n" in match.group():

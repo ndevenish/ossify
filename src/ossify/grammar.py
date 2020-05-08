@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import token as tokenmod
 import tokenize
 from itertools import groupby
 from tokenize import TokenInfo
@@ -146,9 +147,18 @@ def cause_error(message, token=None):
         )
 
 
-def merge_tokens(*tokenlists):
+def merge_tokens(*tokenlists, typename=None):
     tokens = flatten_tokens(*tokenlists)
-    merged = tokens[0]
+    if typename is not None:
+        merged = TokenInfo(
+            type=getattr(tokenmod, typename),
+            string=tokens[0].string,
+            start=tokens[0].start,
+            end=tokens[0].end,
+            line=tokens[0].line,
+        )
+    else:
+        merged = tokens[0]
     for token in tokens[1:]:
         # contiguous - disable for now as bad tokenization
         # assert token.start[1] == (merged.end[1] + 1) or token.start[0] == (

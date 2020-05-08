@@ -16,16 +16,19 @@ from ossify.grammar import (Definition, ScopeName, Scope, combine_strings, break
 # sep; spaces, newlines and ;'s
 
 start: scope_contents ENDMARKER { Scope("<root>", None, scope_contents)}
-scope_contents: contents=scope_entry+ { [x[0] for x in contents] }
+scope_contents: contents=scope_entry+ { [x[0] for x in contents if x != "comment"] }
 scope_entry:
-    | ws? scope { scope }
+    | ws? comment NEWLINE { "comment" }
     | ws? scoped_definition { scoped_definition }
     | ws? include { include }
+    | ws? scope { scope }
 
 scope:
     | NAME opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* { Scope(name.string, opts, cont or []) }
     | NAME "." scope { Scope(name.string, None, [scope]) }
+    # Error handling
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
+    | NAME opts=[sep scope_options] sep? s='{' ws* cont=scope_contents? ws* ENDMARKER { cause_error("Failed to close scope started here", s)}
 
 scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
@@ -59,6 +62,7 @@ include:
 # newline, but the new line must start with a string ('a="3" "4"\n4 "3")
 # or is not valid. Maybe: something that is not a name or a number?
 valueexpr:
+    | valueexpr " " value_comment &NEWLINE { valueexpr }
     | valueexpr " "* NEWLINE " "* STRING valueexpr? { [*valueexpr, string, *(opt or [])]}
     | valueexpr value { valueexpr + [value] }
     | value { value }
@@ -74,13 +78,26 @@ value:
 # Lexing rules
 # Whitespace with newline - tokenizer collapses consecutive whitespace
 ws: NEWLINE | " "
-# sep means token separation - whitespace, or semicolon (one at most)
+# sep means token separation - whitespace, comment, or semicolon (one at most)
 sep:
     | ws? ";" ws?
+    | ws? comment ws?
     | ws
 # div means division of expressions - a newline or semicolon
 div: " "* (NEWLINE | ';') ws?
 s: " "
+
+
+# If parsing a value, then a comment must
+# a) be standalone
+# b) allow escaping of comment returns with a newline
+value_comment:
+    | value_comment ex=(OP | NAME | NUMBER | STRING | "\\" NEWLINE ) { merge_tokens(value_comment, ex, typename="COMMENT")}
+    # Lookahead newline because can designate comment but isn't swallowed
+    | "#" (" " | ";" | &NEWLINE)
+comment:
+    | comment ex=(OP | NAME | NUMBER | STRING) { merge_tokens(comment, ex, typename="COMMENT")}
+    | "#"
 
 # Parsing definition values - anything not '{};' can be in value
 stringlike:
