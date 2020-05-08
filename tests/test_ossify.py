@@ -167,6 +167,13 @@ def test_include():
     parse_string("include fastentrypoints.py")
 
 
+def test_inline_quotes():
+    parse_string(
+        """something=1
+    .help = Treat all sulfur atoms as having the same f' and f\""""
+    )
+
+
 def test_scope_inline_options():
     parse_string(
         """something

@@ -108,7 +108,9 @@ def character_generator(file_interface, encoding="utf-8", verbose=False):
                 end=(line_no, pos),
                 line=line,
             )
-        elif string := reStringStart.match(data, pos=pos):
+        elif (string := reStringStart.match(data, pos=pos)) and (
+            pos == 0 or data[pos - 1] in " \n\t{}="
+        ):
             quote_type = string.group()
             end_pattern = r"(?<!\\)" + quote_type
             re_endquote = re.compile(end_pattern, re.M | re.S)
