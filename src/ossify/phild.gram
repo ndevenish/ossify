@@ -32,7 +32,8 @@ scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
 
 # Automatically extract nested definitions in-grammar
 scoped_definition:
-    | NAME ws? "=" ws? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
+    | NAME s? "=" NEWLINE { cause_error(f"Missing value for {name.string}", newline) }
+    | NAME s? "=" s? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
     | NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
 
 # definition:
@@ -50,8 +51,8 @@ scope_options:
 scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: merge_tokens(valueexpr)}}
 
 include:
-    | "include" " "+ "scope" " "+ scope_name sub=(" "+ scope_name)* div { Include("scope", str(scope_name) + str(sub)) }
-    | "include" [ws "file"] ws valueexpr div   { Include("file", "<value>") }
+    | "include" s+ "scope" s+ scope_name sub=(s+ scope_name)* div { Include("scope", str(scope_name) + str(sub)) }
+    | "include" [s+ "file"] s+ valueexpr div   { Include("file", "<value>") }
 
 # Values can be anything, non-string token separation means separate
 # choices. Multiline strings can roll over a set of options after a
@@ -79,6 +80,7 @@ sep:
     | ws
 # div means division of expressions - a newline or semicolon
 div: " "* (NEWLINE | ';') ws?
+s: " "
 
 # Parsing definition values - anything not '{};' can be in value
 stringlike:

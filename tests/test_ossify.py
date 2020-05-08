@@ -71,6 +71,7 @@ def test_things_that_dont_work():
     assert "anonymous" in check_raises("{ a = 2 }")
     # Subscopes don't have values
     check_raises("options.a = 2 { subscope }")
+    check_raises("some\n= 3")
 
 
 def test_string_continuation():
@@ -139,6 +140,8 @@ def test_escaped_line():
 
 def test_comment():
     parse_string("some = 3 # comment\n# another comment\nb = 3\n#after")
+    # not comment
+    parse_string("some = 3# comment")
 
 
 def test_close_semicolon():
