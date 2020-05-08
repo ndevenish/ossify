@@ -58,7 +58,7 @@ value:
     | NAME
     | tok='{' { cause_error('Cannot declare scope inline with value. Use quotes "{" to escape', tok)}
     # Anything else that isn't a scope close, handle
-    | !'}' OP
+    | !'}' !';' OP
 
 # Lexing rules
 ws: NEWLINE | " "
