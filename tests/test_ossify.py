@@ -136,5 +136,9 @@ def test_escaped_line():
     )
 
 
+def test_comment():
+    parse_string("some = 3 # comment\n# another comment\nb = 3\n#after")
+
+
 # to test:
 # Line terminations: """a.some = 3; .help=help"""

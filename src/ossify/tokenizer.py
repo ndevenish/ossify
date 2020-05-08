@@ -62,6 +62,8 @@ def character_generator(file_interface, encoding="utf-8", verbose=True):
             if verbose:
                 print("Escaped newline")
             pos += 2
+        elif data[pos] == "#":
+            pos = line_end
         elif data[pos] == "\t":
             if verbose:
                 print(f"{pos}: Tab (sent space)")
