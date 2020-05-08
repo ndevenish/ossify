@@ -161,3 +161,11 @@ def test_nested_scope_definition():
 def test_include():
     parse_string("include file something.phil")
     parse_string("include scope a.b.c.d")
+
+
+def test_scope_inline_options():
+    parse_string(
+        """something
+.multiple = True {
+}"""
+    )

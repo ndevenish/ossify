@@ -65,9 +65,10 @@ value:
     | STRING
     | NUMBER
     | NAME
-    | tok='{' { cause_error('Cannot declare scope inline with value. Use quotes "{" to escape', tok)}
     # Anything else that isn't a scope close, handle
-    | !'}' !';' OP
+    | !'{' !'}' !';' OP
+    # Turns out we can - see test test_scope_inline_options
+    # | tok='{' { cause_error('Cannot declare scope inline with value. Use quotes "{" to escape', tok)}
 
 # Lexing rules
 # Whitespace with newline - tokenizer collapses consecutive whitespace
