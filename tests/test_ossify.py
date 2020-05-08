@@ -144,3 +144,8 @@ def test_comment():
 def test_close_semicolon():
     tree = parse_string("""some = 3; .help=help""")
     assert tree.children[0].options["help"]
+
+
+def test_nested_scope_definition():
+    tree = parse_string("a.b.c = 2")
+    assert tree.children[0].children[0].children[0].name == "c"

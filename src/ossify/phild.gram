@@ -1,5 +1,6 @@
 @subheader """
-from ossify.grammar import Definition, ScopeName, Scope, combine_strings, breakp, cause_error, merge_bad_multiline_string, flatten_tokens, merge_tokens
+from ossify.grammar import (Definition, ScopeName, Scope, combine_strings, breakp, cause_error, merge_bad_multiline_string, flatten_tokens, merge_tokens,
+    )
 """
 
 # NAME: Something that could be an identifier
@@ -13,13 +14,12 @@ from ossify.grammar import Definition, ScopeName, Scope, combine_strings, breakp
 # Generic tools
 # ws: spaces and newlines
 # sep; spaces, newlines and ;'s
-# ident: valid python identifier
 
 start: scope_contents ENDMARKER { Scope("<root>", None, scope_contents)}
 scope_contents: contents=scope_entry+ { [x[0] for x in contents] }
 scope_entry:
     | ws? scope { scope }
-    | ws? definition { definition }
+    | ws? scoped_definition { scoped_definition }
 
 scope:
     | scope_name opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* {
@@ -30,8 +30,12 @@ scope:
 scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
 
-definition:
-    | scope_name ws? '=' ws? valueexpr so=[div scope_options { scope_options}] end_def { Definition(scope_name, valueexpr, so)}
+scoped_definition:
+    | NAME ws? "=" ws? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
+    | NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
+
+# definition:
+#     | scope_name ws? '=' ws? valueexpr so=[div scope_options { scope_options}] end_def { Definition(scope_name, valueexpr, so)}
 
 # newline or scope end - lookahead only fails to return value so fake
 end_def: div | &'}' { True }
@@ -61,6 +65,7 @@ value:
     | !'}' !';' OP
 
 # Lexing rules
+# Whitespace with newline - tokenizer collapses consecutive whitespace
 ws: NEWLINE | " "
 # sep means token separation - whitespace, or semicolon (one at most)
 sep:
