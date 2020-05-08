@@ -1,6 +1,6 @@
 @subheader """
 from ossify.grammar import (Definition, ScopeName, Scope, combine_strings, breakp, cause_error, merge_bad_multiline_string, flatten_tokens, merge_tokens,
-    )
+    Include)
 """
 
 # NAME: Something that could be an identifier
@@ -20,6 +20,7 @@ scope_contents: contents=scope_entry+ { [x[0] for x in contents] }
 scope_entry:
     | ws? scope { scope }
     | ws? scoped_definition { scoped_definition }
+    | ws? include { include }
 
 scope:
     | NAME opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* { Scope(name.string, opts, cont or []) }
@@ -47,6 +48,10 @@ scope_options:
 # Technically the option keywords don't have to be full expressions? Until we
 # are typing these, just use the generic behaviour for everything
 scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: merge_tokens(valueexpr)}}
+
+include:
+    | "include" ws "scope" ws scope_name div { Include("scope", str(scope_name)) }
+    | "include" ws "file" ws valueexpr div   { Include("file", "<value>") }
 
 # Values can be anything, non-string token separation means separate
 # choices. Multiline strings can roll over a set of options after a

@@ -14,6 +14,11 @@ class ScopeName(NamedTuple):
         return ".".join(self.parts)
 
 
+class Include(NamedTuple):
+    type: str
+    value: str
+
+
 ScopeOptions = dict
 DefinitionOptions = dict
 

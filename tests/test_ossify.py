@@ -156,3 +156,8 @@ def test_nested_scope_definition():
     assert isinstance(
         tree.children[0].children[0].children[0].children[0], grammar.Definition
     )
+
+
+def test_include():
+    parse_string("include file something.phil")
+    parse_string("include scope a.b.c.d")
