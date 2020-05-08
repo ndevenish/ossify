@@ -66,7 +66,7 @@ def simple_parser_main(parser_class: Type[Parser]) -> None:
 
     if not args.quiet:
         pprint(tree)
-    tree.print_scope()
+        tree.print_scope()
 
     if verbose:
         dt = t1 - t0

@@ -26,7 +26,7 @@ def read_number(data):
     return False
 
 
-def character_generator(file_interface, encoding="utf-8", verbose=True):
+def character_generator(file_interface, encoding="utf-8", verbose=False):
     raw_data = file_interface.read()
     try:
         data = raw_data.decode(encoding)
