@@ -20,7 +20,7 @@ scope_entry:
 
 scope:
     | scope_name opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* {
-                Scope(scope_name, opts, cont)
+                Scope(scope_name, opts, cont or [])
             }
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
 

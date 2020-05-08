@@ -4,7 +4,7 @@ import io
 import tokenize
 from itertools import groupby
 from tokenize import TokenInfo
-from typing import Any, Iterable, List, NamedTuple
+from typing import Any, Iterable, List, NamedTuple, Sequence
 
 
 class ScopeName(NamedTuple):
@@ -32,7 +32,7 @@ def _render_graph(stream, node, indent: str = "", last=True, first=True):
     node_name = str(node)
     if isinstance(node, dict) or isinstance(node, list):
         node_name = str(type(node))
-    stream.write(indent + first_i + node_name + "\n")
+    stream.write(indent + first_i + node_name + "\n" + "\033[0m")
     indent = indent + second_i
     if hasattr(node, "children"):
         children = list(node.children)
@@ -55,7 +55,7 @@ def _render_graph(stream, node, indent: str = "", last=True, first=True):
 class Scope(NamedTuple):
     name: str
     options: ScopeOptions
-    children: List  # Should be Scope | Definition, but mypy crashes
+    children: Sequence = ()  # Should be Scope | Definition, but mypy crashes
 
     def print_scope(self):
         stream = io.StringIO()
