@@ -51,7 +51,7 @@ scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].strin
 
 include:
     | "include" " "+ "scope" " "+ scope_name sub=(" "+ scope_name)* div { Include("scope", str(scope_name) + str(sub)) }
-    | "include" ws "file" ws valueexpr div   { Include("file", "<value>") }
+    | "include" [ws "file"] ws valueexpr div   { Include("file", "<value>") }
 
 # Values can be anything, non-string token separation means separate
 # choices. Multiline strings can roll over a set of options after a

@@ -163,6 +163,8 @@ def test_include():
     parse_string("include scope a.b.c.d")
     # subscope
     parse_string("include scope a.b.c.d smething")
+    # No file designator
+    parse_string("include fastentrypoints.py")
 
 
 def test_scope_inline_options():
