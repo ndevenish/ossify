@@ -161,6 +161,8 @@ def test_nested_scope_definition():
 def test_include():
     parse_string("include file something.phil")
     parse_string("include scope a.b.c.d")
+    # subscope
+    parse_string("include scope a.b.c.d smething")
 
 
 def test_scope_inline_options():

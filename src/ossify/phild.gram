@@ -50,7 +50,7 @@ scope_options:
 scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: merge_tokens(valueexpr)}}
 
 include:
-    | "include" ws "scope" ws scope_name div { Include("scope", str(scope_name)) }
+    | "include" " "+ "scope" " "+ scope_name sub=(" "+ scope_name)* div { Include("scope", str(scope_name) + str(sub)) }
     | "include" ws "file" ws valueexpr div   { Include("file", "<value>") }
 
 # Values can be anything, non-string token separation means separate
