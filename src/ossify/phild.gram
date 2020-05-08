@@ -96,6 +96,7 @@ option_keyword:
     # These only happen on definitions
     | 'type'
     | 'input_size'
+    | 'alias' # (observed)
     # These only happen on scopes
     | 'call'
     | 'sequential_format'
