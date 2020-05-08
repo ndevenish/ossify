@@ -22,14 +22,14 @@ scope_entry:
     | ws? scoped_definition { scoped_definition }
 
 scope:
-    | scope_name opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* {
-                Scope(scope_name, opts, cont or [])
-            }
+    | NAME opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* { Scope(name.string, opts, cont or []) }
+    | NAME "." scope { Scope(name.string, None, [scope]) }
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
 
 scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
     | NAME { ScopeName([name.string]) }
 
+# Automatically extract nested definitions in-grammar
 scoped_definition:
     | NAME ws? "=" ws? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
     | NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }

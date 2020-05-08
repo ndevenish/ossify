@@ -149,3 +149,10 @@ def test_close_semicolon():
 def test_nested_scope_definition():
     tree = parse_string("a.b.c = 2")
     assert tree.children[0].children[0].children[0].name == "c"
+
+    tree = parse_string("a.b.c{d=1}")
+    assert tree.children[0].children[0].children[0].name == "c"
+    assert tree.children[0].children[0].children[0].children[0].name == "d"
+    assert isinstance(
+        tree.children[0].children[0].children[0].children[0], grammar.Definition
+    )
