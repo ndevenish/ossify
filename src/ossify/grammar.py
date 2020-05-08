@@ -142,8 +142,12 @@ def cause_error(message, token=None):
         raise SyntaxError(message)
     else:
         starts = f"  {token.start[0]}: "
+        # disable while tokenizer counting bad
+        # raise SyntaxError(
+        #     f"\n{starts}{token.line.rstrip()}\n{' '*(token.start[1]+len(starts))}^ {message}"
+        # )
         raise SyntaxError(
-            f"\n{starts}{token.line.rstrip()}\n{' '*(token.start[1]+len(starts))}^ {message}"
+            f"\n{starts}{token.line.rstrip()}\n{' '*(len(starts))}^ {message}"
         )
 
 

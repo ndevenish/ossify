@@ -149,6 +149,9 @@ def test_comment():
     )
     parse_string("d=a b c # 1 {2} 3 \\\n4 {5 6}}")
 
+    # Scope commenting
+    parse_string("!a { }")
+
 
 def test_close_semicolon():
     tree = parse_string("""some = 3; .help=help""")

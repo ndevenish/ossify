@@ -24,8 +24,8 @@ scope_entry:
     | ws? scope { scope }
 
 scope:
-    | NAME opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* { Scope(name.string, opts, cont or []) }
-    | NAME "." scope { Scope(name.string, None, [scope]) }
+    | ["!" " "?] NAME opts=[sep scope_options] sep? '{' ws* cont=scope_contents? ws* '}' ws* { Scope(name.string, opts, cont or []) }
+    | ["!" " "?] NAME "." scope { Scope(name.string, None, [scope]) }
     # Error handling
     | tok='{' { cause_error("Not allowed to declare anonymous scope", tok)}
     | NAME opts=[sep scope_options] sep? s='{' ws* cont=scope_contents? ws* ENDMARKER { cause_error("Failed to close scope started here", s)}
@@ -112,12 +112,13 @@ option_keyword:
     | 'multiple'
     | 'style'
     | 'expert_level'
+    | 'alias'
     # These only happen on definitions
     | 'type'
     | 'input_size'
-    | 'alias' # (observed)
+    | 'deprecated'
     # These only happen on scopes
-    | 'call'
+    | 'call' # (?)
     | 'sequential_format'
     | 'disable_add'
     | 'disable_delete'
