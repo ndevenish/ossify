@@ -6,6 +6,9 @@ from ossify.grammar import Definition, ScopeName, Scope, combine_strings, breakp
 # NUMBER: 0123456789
 # STRING: Anything quoted
 # OP: Everything else
+# For tokenizing/speed whitespace is collapsed down - any sequence of
+#   whitespace is converted to a single token. That token is a NEWLINE
+#   if there are any newline tokens - otherwise it's an OP with " "
 
 # Generic tools
 # ws: spaces and newlines
@@ -54,28 +57,11 @@ value:
     | NUMBER
     | NAME
     | tok='{' { cause_error('Cannot declare scope inline with value. Use quotes "{" to escape', tok)}
-    # We need to handle the error case where a multiline string with single quotes
-    # | bad_python_string { merge_bad_multiline_string(bad_python_string) }
     # Anything else that isn't a scope close, handle
     | !'}' OP
-# Because string can be "string" or "bad string" we test both together for
-# continuations
-# valuestring:
-#     | STRING
-    # | bad_python_string { merge_bad_multiline_string(bad_python_string) }
-
-# Rules for parsing a multiline string where single quote is used. This
-# makes it through the tokenizer as an error state, so we should be able
-# to patch something together.
-# We swallow STRING values because this I believe this implies an open
-# and close on the same line, so would have been expected to be part
-# bad_python_string:
-#     | '"' (STRING | NUMBER | NAME | !'"' OP | "'" | NEWLINE)+ '"'
-#     | "'" (STRING | NUMBER | NAME | !"'" OP | '"' | NEWLINE)+ "'"
 
 # Lexing rules
-# ident: head=NAME tail=(NAME | NUMBER)* { breakp(merge_tokens(head, tail)) }
-ws: (NEWLINE | " ")+
+ws: NEWLINE | " "
 # sep means token separation - whitespace, or semicolon (one at most)
 sep:
     | ws? ";" ws?

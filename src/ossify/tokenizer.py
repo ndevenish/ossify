@@ -1,14 +1,16 @@
 import io
 import re
+import sys
 import token
 import tokenize
+from token import tok_name
 from tokenize import TokenInfo
 from typing import Iterator, List
 
 numchars = "0123456789"
 
 reNamelike = re.compile(r"[A-Za-z_]")
-reWhitespace = re.compile("[ \t]+")
+reWhitespace = re.compile("[ \t\n]+")
 reName = re.compile(r"[A-Za-z_]\w*")
 reStringStart = re.compile(r'"""|"|\'\'\'|\'')
 
@@ -64,17 +66,37 @@ def character_generator(file_interface, encoding="utf-8", verbose=False):
             pos += 2
         elif data[pos] == "#":
             pos = line_end
-        elif data[pos] == "\t":
-            if verbose:
-                print(f"{pos}: Tab (sent space)")
-            yield TokenInfo(
-                type=token.OP,
-                string=" ",
-                start=(line_no, pos),
-                end=(line_no, pos),
-                line=line,
-            )
-            pos += 1
+        elif match := reWhitespace.match(data, pos=pos):
+            newlines = match.group().count("\n")
+            if "\n" in match.group():
+                yield TokenInfo(
+                    type=token.NEWLINE,
+                    string="\n",
+                    start=(line_no, pos),
+                    end=(line_no + newlines, match.end()),
+                    line=line,
+                )
+            else:
+                yield TokenInfo(
+                    type=token.OP,
+                    string=" ",
+                    start=(line_no, pos),
+                    end=(line_no, match.end()),
+                    line=line,
+                )
+            pos = match.end()
+            line_no += newlines
+        # elif data[pos] == "\t":
+        #     if verbose:
+        #         print(f"{pos}: Tab (sent space)")
+        #     yield TokenInfo(
+        #         type=token.OP,
+        #         string=" ",
+        #         start=(line_no, pos),
+        #         end=(line_no, pos),
+        #         line=line,
+        #     )
+        #     pos += 1
         elif data[pos] == "\n":
             if verbose:
                 print(f"{pos}: NEWLINE")
@@ -111,6 +133,8 @@ def character_generator(file_interface, encoding="utf-8", verbose=False):
             )
             pos = end_match.end()
         elif name := reName.match(data, pos=pos):
+            if verbose:
+                print(f"{pos}: NAME {name.group()}")
             yield TokenInfo(
                 type=token.NAME,
                 string=name.group(),
@@ -390,3 +414,70 @@ class Tokenizer:
         else:
             tok = self._tokens[self._index - 1]
             print(f"{fill} {shorttok(tok)}")
+
+
+def main():
+    import argparse
+
+    # Helper error handling routines
+    def perror(message):
+        sys.stderr.write(message)
+        sys.stderr.write("\n")
+
+    def error(message, filename=None, location=None):
+        if location:
+            args = (filename,) + location + (message,)
+            perror("%s:%d:%d: error: %s" % args)
+        elif filename:
+            perror("%s: error: %s" % (filename, message))
+        else:
+            perror("error: %s" % message)
+        sys.exit(1)
+
+    # Parse the arguments and options
+    parser = argparse.ArgumentParser(prog="python -m tokenize")
+    parser.add_argument(
+        dest="filename",
+        nargs="?",
+        metavar="filename.py",
+        help="the file to tokenize; defaults to stdin",
+    )
+    parser.add_argument(
+        "-e",
+        "--exact",
+        dest="exact",
+        action="store_true",
+        help="display token names using the exact type",
+    )
+    args = parser.parse_args()
+
+    try:
+        # Tokenize the input
+        if args.filename:
+            filename = args.filename
+            with open(filename, "r") as f:
+                tokens = list(character_generator(f))
+        else:
+            filename = "<stdin>"
+            tokens = character_generator(sys.stdin, None)
+
+        # Output the tokenization
+        for token in tokens:
+            token_type = token.type
+            if args.exact:
+                token_type = token.exact_type
+            token_range = "%d,%d-%d,%d:" % (token.start + token.end)
+            print("%-20s%-15s%-15r" % (token_range, tok_name[token_type], token.string))
+    except SyntaxError as err:
+        error(err, filename)
+    except OSError as err:
+        error(err)
+    except KeyboardInterrupt:
+        print("interrupted\n")
+    except Exception as err:
+        perror("unexpected error: %s" % err)
+        raise
+
+
+if __name__ == "__main__":
+    main()
