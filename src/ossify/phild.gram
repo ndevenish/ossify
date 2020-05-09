@@ -51,7 +51,7 @@ scope_options:
 
 # Technically the option keywords don't have to be full expressions? Until we
 # are typing these, just use the generic behaviour for everything
-scope_option: "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: merge_tokens(valueexpr)}}
+scope_option: ["!" ws?] "." option_keyword ws?'=' ws? valueexpr { {option_keyword[0].string: merge_tokens(valueexpr)}}
 
 include:
     | "include" s+ "scope" s+ scope_name sub=(s+ scope_name)* div { Include("scope", str(scope_name) + str(sub)) }
