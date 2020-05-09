@@ -157,6 +157,7 @@ def test_comment():
     parse_string("!a { }")
     parse_string("a\n!.help='a'{}")
     parse_string("!a = 2")
+    parse_string("! include none")
 
 
 def test_close_semicolon():
