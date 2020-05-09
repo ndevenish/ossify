@@ -148,7 +148,9 @@ def test_comment():
         "#comment\n# comment\na #comment\n{#somment\nb=2 # comment\nc = 3# not comment\n}"
     )
     parse_string("d=a b c # 1 {2} 3 \\\n4 {5 6}}")
-
+    parse_string("a # what\n# what\n#what\n{}")
+    parse_string("a = 3\n#comment\n.help=some\n")
+    parse_string("a = 3\n#comment\n#another\n.help=some\n")
     # Scope commenting
     parse_string("!a { }")
 
