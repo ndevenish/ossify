@@ -156,6 +156,7 @@ def test_comment():
     # Scope commenting
     parse_string("!a { }")
     parse_string("a\n!.help='a'{}")
+    parse_string("!a = 2")
 
 
 def test_close_semicolon():

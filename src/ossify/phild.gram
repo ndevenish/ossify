@@ -36,8 +36,8 @@ scope_name: scope_name "." NAME { ScopeName(scope_name.parts + [name.string]) }
 # Automatically extract nested definitions in-grammar
 scoped_definition:
     | NAME s? "=" NEWLINE { cause_error(f"Missing value for {name.string}", newline) }
-    | NAME s? "=" s? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
-    | NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
+    | ["!" " "?] NAME s? "=" s? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
+    | ["!" " "?] NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
 
 # definition:
 #     | scope_name ws? '=' ws? valueexpr so=[div scope_options { scope_options}] end_def { Definition(scope_name, valueexpr, so)}
