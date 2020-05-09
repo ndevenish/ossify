@@ -81,7 +81,7 @@ ws: NEWLINE | " "
 # sep means token separation - whitespace, comment, or semicolon (one at most)
 sep:
     | ws? ";" ws?
-    | ws? comment ws?
+    | ws? (comment ws?)+
     | ws
 # div means division of expressions - a newline or semicolon
 div: " "* (NEWLINE | ';') ws?
