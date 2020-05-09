@@ -15,7 +15,7 @@ from ossify.grammar import (Definition, ScopeName, Scope, combine_strings, break
 # ws: spaces and newlines
 # sep; spaces, newlines and ;'s
 
-start: scope_contents ENDMARKER { Scope("<root>", None, scope_contents)}
+start: scope_contents ws* ENDMARKER { Scope("<root>", None, scope_contents)}
 scope_contents: contents=scope_entry+ { [x[0] for x in contents if x != "comment"] }
 scope_entry:
     | ws? comment NEWLINE { "comment" }
@@ -84,7 +84,7 @@ sep:
     | ws? (comment ws?)+
     | ws
 # div means division of expressions - a newline or semicolon
-div: " "* (NEWLINE | ';') ws?
+div: " "* comment? (NEWLINE | ';') (comment ws)*
 s: " "
 
 

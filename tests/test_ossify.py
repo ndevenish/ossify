@@ -128,6 +128,8 @@ def test_multiline_string_dedent():
 def test_multiple_newline():
     parse_string("something = 3\n\nanother = 4")
     parse_string("something {\n}\n\nanother{}")
+    parse_string("something {\n}\n\nanother{}\n\n\n")
+    parse_string("a = 4\n\n\n")
 
 
 def test_escaped_line():

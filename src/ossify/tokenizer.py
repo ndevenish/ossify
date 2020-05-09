@@ -51,6 +51,7 @@ def character_generator(file_interface, encoding="utf-8", verbose=False):
                 line_end = maxlen
         line = data[line_start:line_end]
         line_remaining = data[pos:line_end]
+        # print(line)
         if verbose:
             print(
                 "Processing line: \033[37m"
