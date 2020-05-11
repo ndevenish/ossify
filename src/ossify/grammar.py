@@ -196,7 +196,7 @@ class TatsuSemantics:
         return Scope("<root>", options=None, children=contents)
 
     def scope(self, ast):
-        return Scope(".".join(ast["name"]), None, ast["children"])
+        return Scope(".".join(ast["name"]), None, ast["children"] or [])
 
     def scope_name(self, ast):
         return tuple([ast["l"]] + (ast["r"] or []))
