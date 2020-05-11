@@ -183,6 +183,7 @@ def test_comment():
     parse_string(
         "#comment\n# comment\na #comment\n{#somment\nb=2 # comment\nc = 3# not comment\n}"
     )
+    parse_string("d=a b c # 1 {2} 3 \\\n4 {5 6}}\n")
     parse_string("d=a b c # 1 {2} 3 \\\n4 {5 6}}")
     parse_string("a # what\n# what\n#what\n{}")
     parse_string("a = 3\n#comment\n.help=some\n")

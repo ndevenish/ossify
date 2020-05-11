@@ -1,3 +1,5 @@
+@@grammar :: PHIL
+@@eol_comments :: /#.*?$/
 
 start = scope_contents $;
 
@@ -50,6 +52,7 @@ scope_name = l:NAME {DOT r+:NAME}* ;
 # by the buffer
 valueexpr = @:expanding_valueexpr [";"] ;
 expanding_valueexpr =
+    | expanding_valueexpr VALUE_COMMENT
     # A string on the lines after a value expression counts as part of it
     | expanding_valueexpr {WSNL}+ string
     # Other than above rules, a newline breaks the value
@@ -63,6 +66,12 @@ value =
     # | /\\\n/
     ;
 
+# value_comment = / # / ~ /.*?[^\\]\n/ ;
+VALUE_COMMENT = / # (?:.|\n)*?(?<!\\)(?:\n|\Z)/ ;
+
+    # | value_comment ex=(OP | NAME | NUMBER | STRING | "\\" NEWLINE ) { merge_tokens(value_comment, ex, typename="COMMENT")}
+    # Lookahead newline because can designate comment but isn't swallowed
+    # | "#" (" " | ";" | &NEWLINE)
 # value = /[^\n;{}]+/ ;
 
 
