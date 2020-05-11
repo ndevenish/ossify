@@ -113,6 +113,8 @@ OPTION_KEYWORD =
 bad_option_keyword= NAME;
 bad_anonymous_scope= "{";
 bad_definition_assignment=
-    | scope_name WSNL
-    | scope_name "=" WSNL
+    | bad_definition_assignment_missing_value
+    | bad_definition_assignment_spaced_assignment
     ;
+bad_definition_assignment_spaced_assignment = scope_name {WSNL}+ "=" ;
+bad_definition_assignment_missing_value = scope_name "=" WSNL ;

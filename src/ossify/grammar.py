@@ -227,5 +227,8 @@ class TatsuSemantics:
     def bad_anonymous_scope(self, ast):
         raise SemanticError("Not allowed to declare anonymous scope")
 
-    def bad_definition_assignment(self, ast):
+    def bad_definition_assignment_spaced_assignment(self, ast):
+        raise SemanticError("Definition assignment should be on same line")
+
+    def bad_definition_assignment_missing_value(self, ast):
         raise SemanticError(f"Missing value for {'.'.join(ast[0])}")
