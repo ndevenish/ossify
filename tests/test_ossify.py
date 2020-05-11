@@ -1,5 +1,4 @@
 import pytest
-
 from ossify import grammar
 from ossify.testutil import parse_string
 
@@ -20,6 +19,25 @@ def test_leading_newline():
     test_scope = "a {\n  b = 1\n}"
     parse_string(test_scope)
     parse_string("\n" + test_scope)
+
+
+def test_simple_structure():
+    parse_string(
+        """some_value = 3
+another =4
+
+subscope {
+  subscope_value = 3
+  another {
+    deeper = 42
+  }
+}
+
+multival = some more values
+a.b.c = some_value
+
+"""
+    )
 
 
 def test_parses():
@@ -72,6 +90,8 @@ def test_things_that_dont_work():
     # Subscopes don't have values
     check_raises("options.a = 2 { subscope }")
     check_raises("some\n= 3")
+    # Spaces in scope name
+    check_raises("a .b = 4")
 
 
 def test_string_continuation():

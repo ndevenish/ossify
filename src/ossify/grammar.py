@@ -40,7 +40,7 @@ def _render_graph(stream, node, indent: str = "", last=True, first=True):
         node_name = str(type(node))
     stream.write(indent + first_i + node_name + "\n" + "\033[0m")
     indent = indent + second_i
-    if hasattr(node, "children"):
+    if isinstance(node, Scope):
         children = list(node.children)
     elif isinstance(node, Definition):
         children = list(node.assignment)
@@ -188,3 +188,8 @@ def flatten_tokens(*tokenlists):
         else:
             flat.append(entry)
     return flat
+
+
+class TatsuSemantics:
+    def start(self, contents):
+        return Scope("<root>", options=None, children=contents)
