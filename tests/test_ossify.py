@@ -21,9 +21,13 @@ def test_leading_newline():
     parse_string("\n" + test_scope)
 
 
+def test_single_subscope_def():
+    parse_string("some_value.f.c = 3")
+
+
 def test_simple_structure():
     parse_string(
-        """some_value = 3
+        """some_value.f = 3
 another =4
 
 subscope {

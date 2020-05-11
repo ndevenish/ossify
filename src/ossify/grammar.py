@@ -43,7 +43,8 @@ def _render_graph(stream, node, indent: str = "", last=True, first=True):
     if isinstance(node, Scope):
         children = list(node.children)
     elif isinstance(node, Definition):
-        children = list(node.assignment)
+        # children = list(node.assignment)
+        return
     elif (
         not isinstance(node, Iterable)
         or isinstance(node, str)
@@ -193,3 +194,13 @@ def flatten_tokens(*tokenlists):
 class TatsuSemantics:
     def start(self, contents):
         return Scope("<root>", options=None, children=contents)
+
+    def scope(self, ast):
+        return Scope(".".join(ast["name"]), None, ast["children"])
+
+    def scope_name(self, ast):
+        return tuple([ast["l"]] + (ast["r"] or []))
+
+    def definition(self, ast):
+        return Definition(".".join(ast["name"]), ast["value"], None)
+        # breakpoint()
