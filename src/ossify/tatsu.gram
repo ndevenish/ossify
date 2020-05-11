@@ -11,6 +11,21 @@ scope_entry =
 
 definition = name:scope_name "=" value:valueexpr options:[scope_options];
 
+# Doing scoping in-grammar is possible but complicated the grammar
+# definition = Scoped_definition ;
+# Scoped_definition =
+#     | NAME DOT Scoped_definition
+#     | Definition
+#     ;
+# Definition = NAME "=" value:valueexpr options:[scope_options];
+
+# # Automatically extract nested definitions in-grammar
+# scoped_definition:
+#     | NAME s? "=" NEWLINE { cause_error(f"Missing value for {name.string}", newline) }
+#     | ["!" " "?] NAME s? "=" s? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
+#     | ["!" " "?] NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
+
+
 scope = name:scope_name options:[scope_options] '{' [children+:scope_contents] '}' ;
 
 scope_options = {scope_option}+ ;

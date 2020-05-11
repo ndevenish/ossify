@@ -190,18 +190,30 @@ def flatten_tokens(*tokenlists):
     return flat
 
 
+def create_enclosing_scopes(names, child):
+    scoped = child
+    for name in reversed(names):
+        scoped = Scope(name, None, [scoped])
+    return scoped
+
+
 class TatsuSemantics:
     def start(self, contents):
         return Scope("<root>", options=None, children=contents)
 
     def scope(self, ast):
-        return Scope(".".join(ast["name"]), ast["options"], ast["children"] or [])
+        return create_enclosing_scopes(
+            ast["name"][:-1],
+            Scope(ast["name"][-1], ast["options"], ast["children"] or []),
+        )
 
     def scope_name(self, ast):
         return tuple([ast["l"]] + (ast["r"] or []))
 
     def definition(self, ast):
-        return Definition(".".join(ast["name"]), ast["value"], ast["options"])
+        return create_enclosing_scopes(
+            ast["name"][:-1], Definition(ast["name"][-1], ast["value"], ast["options"]),
+        )
 
     def bad_option_keyword(self, ast):
         raise SyntaxError(f"Unknown option parameter: {ast[0]}")
