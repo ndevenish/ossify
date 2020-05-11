@@ -15,7 +15,7 @@ scope = name:scope_name options:[scope_options] '{' [children+:scope_contents] '
 
 scope_options = {scope_option}+ ;
 
-scope_option = "." name:OPTION_KEYWORD "=" value:value ;
+scope_option = "." name:OPTION_KEYWORD "=" value:valueexpr ;
 
 
 include =
