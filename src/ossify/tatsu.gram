@@ -42,7 +42,7 @@ expanding_valueexpr =
     # A string on the lines after a value expression counts as part of it
     | expanding_valueexpr {WSNL}+ string
     # Other than above rules, a newline breaks the value
-    | expanding_valueexpr !WSNL value
+    | expanding_valueexpr !WSNL ["\\\n"] value
     | value
     ;
 
@@ -60,8 +60,9 @@ VALUE_COMMENTLIKE = /[ \t]*#[^{};\s]+/ ;
 # Building blocks that don't swallow whitespace
 NAME = /[A-Za-z_]\w*/ ;
 DOT = /\./ ;
-# Whitespace-preceeded explicit newline
-WSNL = /[ \t]*\n/ ;
+# Whitespace-preceeded explicit _unescaped_ newline
+WSNL = /(?:[ \t]|\\\n)*\n/ ;
+
 # A value token consumes any non-terminators until whitespace
 VALUETOKEN = /[^{};\s]+/ ;
 
