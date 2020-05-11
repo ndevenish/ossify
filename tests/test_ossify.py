@@ -224,6 +224,11 @@ def test_include():
     parse_string("include scope a.b.c.d smething")
     # No file designator
     parse_string("include fastentrypoints.py")
+    parse_string(
+        """include scope dials.test.algorithms.refinement.geometry_phil
+# dials/test/algorithms/refinement/test_finite_diffs.py (67, 16)
+geometry.parameters.crystal.a.length.range = 10 15"""
+    )
 
 
 def test_inline_quotes():
