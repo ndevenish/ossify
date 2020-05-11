@@ -26,7 +26,7 @@ definition = name:scope_name "=" value:valueexpr options:[scope_options];
 #     | ["!" " "?] NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
 
 
-scope = name:scope_name options:[scope_options] '{' [children+:scope_contents] '}' ;
+scope = name:scope_name options:[scope_options] '{' [children:scope_contents] '}' ;
 
 scope_options = {scope_option}+ ;
 
