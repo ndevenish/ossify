@@ -38,10 +38,14 @@ subscope {
 }
 
 multival = some more values
-a.b.c = some_value
+a.b.c = some_value # inline comment
 
 """
     )
+
+
+def test_basic_multival():
+    parse_string("multival = some more values")
 
 
 def test_parses():
@@ -140,7 +144,7 @@ def test_badquote_multiline_string_2():
 
 def test_multiline_string_dedent():
     # This test case causes tokenizer problems
-    r = parse_string(
+    parse_string(
         """require_images = True
   .help = "Flag which can be set to False to launch image viewer without
      "
@@ -148,7 +152,6 @@ def test_multiline_string_dedent():
  "
  """
     )
-    r.print_scope()
 
 
 def test_multiple_newline():
@@ -156,6 +159,7 @@ def test_multiple_newline():
     parse_string("something {\n}\n\nanother{}")
     parse_string("something {\n}\n\nanother{}\n\n\n")
     parse_string("a = 4\n\n\n")
+    parse_string("a = 4 'astring'\n\n'another'\n")
 
 
 def test_escaped_line():
