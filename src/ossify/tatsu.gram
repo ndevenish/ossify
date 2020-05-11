@@ -15,21 +15,6 @@ definition =
     | ["!"] bad_definition_assignment
     | ["!"] name:scope_name "=" value:valueexpr options:[scope_options];
 
-# Doing scoping in-grammar is possible but complicated the grammar
-# definition = Scoped_definition ;
-# Scoped_definition =
-#     | NAME DOT Scoped_definition
-#     | Definition
-#     ;
-# Definition = NAME "=" value:valueexpr options:[scope_options];
-
-# # Automatically extract nested definitions in-grammar
-# scoped_definition:
-#     | NAME s? "=" NEWLINE { cause_error(f"Missing value for {name.string}", newline) }
-#     | ["!" " "?] NAME s? "=" s? valueexpr so=[div scope_options { scope_options}] end_def { Definition(name.string, valueexpr, so) }
-#     | ["!" " "?] NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
-
-
 scope =
     | ["!"] bad_anonymous_scope
     | ["!"] name:scope_name options:[scope_options] '{' [children:scope_contents] '}' ;
@@ -52,7 +37,8 @@ scope_name = l:NAME {DOT r+:NAME}* ;
 # by the buffer
 valueexpr = @:expanding_valueexpr [";"] ;
 expanding_valueexpr =
-    | expanding_valueexpr VALUE_COMMENT
+    | expanding_valueexpr VALUE_COMMENTLIKE
+    | @:expanding_valueexpr VALUE_COMMENT
     # A string on the lines after a value expression counts as part of it
     | expanding_valueexpr {WSNL}+ string
     # Other than above rules, a newline breaks the value
@@ -66,20 +52,10 @@ value =
     # | /\\\n/
     ;
 
-# value_comment = / # / ~ /.*?[^\\]\n/ ;
-VALUE_COMMENT = / # (?:.|\n)*?(?<!\\)(?:\n|\Z)/ ;
-
-    # | value_comment ex=(OP | NAME | NUMBER | STRING | "\\" NEWLINE ) { merge_tokens(value_comment, ex, typename="COMMENT")}
-    # Lookahead newline because can designate comment but isn't swallowed
-    # | "#" (" " | ";" | &NEWLINE)
-# value = /[^\n;{}]+/ ;
-
-
-# valueexpr:
-#     | valueexpr " " value_comment &NEWLINE { valueexpr }
-#     | valueexpr " "* NEWLINE " "* STRING valueexpr? { [*valueexpr, string, *(opt or [])]}
-#     | valueexpr value { valueexpr + [value] }
-#     | value { value }
+# Comments in values must have a certain form
+VALUE_COMMENT = / # (?:.|\n)*?(?<!\\)(?=\n|\Z)/ ;
+# But things that look like comments but no space after are values
+VALUE_COMMENTLIKE = /[ \t]*#[^{};\s]+/ ;
 
 # Building blocks that don't swallow whitespace
 NAME = /[A-Za-z_]\w*/ ;

@@ -179,7 +179,6 @@ def test_comment():
     # not comment
     parse_string("some = 3# comment")
     parse_string("a #comment\n{}")
-    parse_string("a #comment\n{#somment\nb=2 # comment\nc = 3# not comment}#after")
     parse_string(
         "#comment\n# comment\na #comment\n{#somment\nb=2 # comment\nc = 3# not comment\n}"
     )
@@ -188,6 +187,7 @@ def test_comment():
     parse_string("a # what\n# what\n#what\n{}")
     parse_string("a = 3\n#comment\n.help=some\n")
     parse_string("a = 3\n#comment\n#another\n.help=some\n")
+    parse_string("a #comment\n{#somment\nb=2 # comment\nc = 3# not comment}#after")
 
 
 def test_scope_comments():
