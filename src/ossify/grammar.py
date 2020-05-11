@@ -183,7 +183,6 @@ def flatten_tokens(*tokenlists):
     flat = []
     for entry in tokenlists:
         if isinstance(entry, list):
-            # print("recursing", entry)
             for subentry in entry:
                 flat.extend(flatten_tokens(subentry))
         else:
@@ -196,11 +195,17 @@ class TatsuSemantics:
         return Scope("<root>", options=None, children=contents)
 
     def scope(self, ast):
-        return Scope(".".join(ast["name"]), None, ast["children"] or [])
+        return Scope(".".join(ast["name"]), ast["options"], ast["children"] or [])
 
     def scope_name(self, ast):
         return tuple([ast["l"]] + (ast["r"] or []))
 
     def definition(self, ast):
-        return Definition(".".join(ast["name"]), ast["value"], None)
-        # breakpoint()
+        return Definition(".".join(ast["name"]), ast["value"], ast["options"])
+
+    def bad_option_keyword(self, ast):
+        raise SyntaxError(f"Unknown option parameter: {ast[0]}")
+
+    def scope_options(self, ast):
+        # scope_options
+        return {x["name"]: x["value"] for x in ast}

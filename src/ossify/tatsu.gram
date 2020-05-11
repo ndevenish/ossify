@@ -8,12 +8,43 @@ scope_entry =
     | scope
     ;
 
-definition = name:scope_name "=" value:VALUE ;
+definition = name:scope_name "=" value:value options:[scope_options];
 
-scope = name:scope_name '{' [children+:scope_contents] '}' ;
+scope = name:scope_name options:[scope_options] '{' [children+:scope_contents] '}' ;
+
+scope_options = {scope_option}+ ;
+
+scope_option = "." name:OPTION_KEYWORD "=" value:value ;
+
 
 scope_name = l:NAME {DOT r+:NAME}* ;
 
+# Value eats rest of line - maybe split via grammar later
+value = /[^\n;{}]+/ ;
 NAME = /[A-Za-z_]\w*/ ;
-VALUE = /[^\n]+/ ;
 DOT = /\./ ;
+
+
+OPTION_KEYWORD =
+    | 'help'
+    | 'caption'
+    | 'short_caption'
+    | 'optional'
+    | 'multiple'
+    | 'style'
+    | 'expert_level'
+    | 'alias'
+    # These only happen on definitions
+    | 'type'
+    | 'input_size'
+    | 'deprecated'
+    # These only happen on scopes
+    | 'call' # (?)
+    | 'sequential_format'
+    | 'disable_add'
+    | 'disable_delete'
+    | bad_option_keyword
+    ;
+
+# Error handling
+bad_option_keyword= NAME;

@@ -104,6 +104,8 @@ def test_string_continuation():
 
 def test_options():
     parse_string("a = 2\n  .caption='goodoption'")
+    parse_string("a \n  .caption='scopeoption' { b = 2}")
+
     assert "unknown option" in check_raises("a = 2\n .badoption = 3").lower()
 
 
