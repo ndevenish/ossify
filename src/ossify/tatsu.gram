@@ -1,0 +1,19 @@
+
+start = scope_contents $;
+
+scope_contents = {scope_entry}+ ;
+
+scope_entry =
+    | definition
+    | scope
+    ;
+
+definition = name:scope_name "=" value:VALUE ;
+
+scope = name:scope_name '{' [children+:scope_contents] '}' ;
+
+scope_name = l:NAME {DOT r+:NAME}* ;
+
+NAME = /[A-Za-z_]\w*/ ;
+VALUE = /[^\n]+/ ;
+DOT = /\./ ;
