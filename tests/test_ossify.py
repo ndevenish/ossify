@@ -188,7 +188,9 @@ def test_comment():
     parse_string("a # what\n# what\n#what\n{}")
     parse_string("a = 3\n#comment\n.help=some\n")
     parse_string("a = 3\n#comment\n#another\n.help=some\n")
-    # Scope commenting
+
+
+def test_scope_comments():
     parse_string("!a { }")
     parse_string("a\n!.help='a'{}")
     parse_string("!a = 2")
