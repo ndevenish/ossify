@@ -26,7 +26,9 @@ definition = name:scope_name "=" value:valueexpr options:[scope_options];
 #     | ["!" " "?] NAME "." scoped_definition { Scope(name.string, None, [scoped_definition]) }
 
 
-scope = name:scope_name options:[scope_options] '{' [children:scope_contents] '}' ;
+scope =
+    | bad_anonymous_scope
+    | name:scope_name options:[scope_options] '{' [children:scope_contents] '}' ;
 
 scope_options = {scope_option}+ ;
 
@@ -107,3 +109,4 @@ OPTION_KEYWORD =
 
 # Error handling
 bad_option_keyword= NAME;
+bad_anonymous_scope= "{";

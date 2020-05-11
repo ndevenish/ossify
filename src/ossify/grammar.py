@@ -223,3 +223,6 @@ class TatsuSemantics:
     def scope_options(self, ast):
         # scope_options
         return {x["name"]: x["value"] for x in ast}
+
+    def bad_anonymous_scope(self, ast):
+        raise SemanticError("Not allowed to declare anonymous scope")
