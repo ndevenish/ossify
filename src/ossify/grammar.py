@@ -79,7 +79,7 @@ class Definition(NamedTuple):
     options: DefinitionOptions
 
     def __str__(self):
-        return f"Definition {self.name} = [{len(self.assignment)} values] {self.options if self.options else ''}"
+        return f"Definition {self.name} = |{self.assignment}| {self.options if self.options else ''}"
 
 
 def combine_strings(parts):
