@@ -217,12 +217,12 @@ class TatsuSemantics:
             ast["name"][:-1], Definition(ast["name"][-1], ast["value"], ast["options"]),
         )
 
-    def bad_option_keyword(self, ast):
-        raise SemanticError(f"Unknown option parameter: {ast[0]}")
-
     def scope_options(self, ast):
         # scope_options
         return {x["name"]: x["value"] for x in ast}
+
+    def bad_option_keyword(self, ast):
+        raise SemanticError(f"Unknown option parameter: {ast[0]}")
 
     def bad_anonymous_scope(self, ast):
         raise SemanticError("Not allowed to declare anonymous scope")
