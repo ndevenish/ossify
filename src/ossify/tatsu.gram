@@ -29,11 +29,12 @@ scope_name = l:NAME {DOT r+:NAME}* ;
 # Parsing value expressions. This needs to be done in-grammar to handle
 # newline and comment escaping rules that would otherwise be swallowed
 # by the buffer
-valueexpr =
+valueexpr = @:expanding_valueexpr [";"] ;
+expanding_valueexpr =
     # A string on the lines after a value expression counts as part of it
-    | valueexpr {WSNL}+ string
+    | expanding_valueexpr {WSNL}+ string
     # Other than above rules, a newline breaks the value
-    | valueexpr !WSNL value
+    | expanding_valueexpr !WSNL value
     | value
     ;
 
@@ -58,7 +59,7 @@ DOT = /\./ ;
 # Whitespace-preceeded explicit newline
 WSNL = /[ \t]*\n/ ;
 # A value token consumes any non-terminators until whitespace
-VALUETOKEN = /[^{}\s]+/ ;
+VALUETOKEN = /[^{};\s]+/ ;
 
 # A quoted string
 string =

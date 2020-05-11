@@ -100,6 +100,8 @@ def test_things_that_dont_work():
     check_raises("some\n= 3")
     # Spaces in scope name
     check_raises("a .b = 4")
+    # Floating semicolons
+    check_raises("a = 3 ; ; .help=what")
 
 
 def test_string_continuation():
