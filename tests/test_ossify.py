@@ -98,6 +98,7 @@ def test_things_that_dont_work():
     assert "anonymous" in check_raises("{ a = 2 }")
     # Subscopes don't have values
     check_raises("options.a = 2 { subscope }")
+    assert "Missing value" in check_raises("some=\n3")
     check_raises("some\n= 3")
     # Spaces in scope name
     check_raises("a .b = 4")

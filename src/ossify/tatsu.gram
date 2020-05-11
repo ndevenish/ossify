@@ -9,7 +9,9 @@ scope_entry =
     | include
     ;
 
-definition = name:scope_name "=" value:valueexpr options:[scope_options];
+definition =
+    | bad_definition_assignment
+    | name:scope_name "=" value:valueexpr options:[scope_options];
 
 # Doing scoping in-grammar is possible but complicated the grammar
 # definition = Scoped_definition ;
@@ -110,3 +112,7 @@ OPTION_KEYWORD =
 # Error handling
 bad_option_keyword= NAME;
 bad_anonymous_scope= "{";
+bad_definition_assignment=
+    | scope_name WSNL
+    | scope_name "=" WSNL
+    ;
