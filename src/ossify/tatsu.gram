@@ -12,8 +12,8 @@ scope_entry =
     ;
 
 definition =
-    | bad_definition_assignment
-    | name:scope_name "=" value:valueexpr options:[scope_options];
+    | ["!"] bad_definition_assignment
+    | ["!"] name:scope_name "=" value:valueexpr options:[scope_options];
 
 # Doing scoping in-grammar is possible but complicated the grammar
 # definition = Scoped_definition ;
@@ -31,17 +31,17 @@ definition =
 
 
 scope =
-    | bad_anonymous_scope
-    | name:scope_name options:[scope_options] '{' [children:scope_contents] '}' ;
+    | ["!"] bad_anonymous_scope
+    | ["!"] name:scope_name options:[scope_options] '{' [children:scope_contents] '}' ;
 
 scope_options = {scope_option}+ ;
 
-scope_option = "." name:OPTION_KEYWORD "=" value:valueexpr ;
+scope_option = ["!"] "." name:OPTION_KEYWORD "=" value:valueexpr ;
 
 
 include =
-    | "include" "scope" scope_name {scope_name}*
-    | "include" ["file"] value
+    | ["!"] "include" "scope" scope_name {scope_name}*
+    | ["!"] "include" ["file"] value
     ;
 
 
