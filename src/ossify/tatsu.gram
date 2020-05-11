@@ -6,6 +6,7 @@ scope_contents = {scope_entry}+ ;
 scope_entry =
     | definition
     | scope
+    | include
     ;
 
 definition = name:scope_name "=" value:value options:[scope_options];
@@ -15,6 +16,12 @@ scope = name:scope_name options:[scope_options] '{' [children+:scope_contents] '
 scope_options = {scope_option}+ ;
 
 scope_option = "." name:OPTION_KEYWORD "=" value:value ;
+
+
+include =
+    | "include" "scope" scope_name {scope_name}*
+    | "include" ["file"] value
+    ;
 
 
 scope_name = l:NAME {DOT r+:NAME}* ;
