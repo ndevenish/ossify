@@ -168,9 +168,12 @@ def test_multiple_newline():
 
 def test_escaped_line():
     parse_string(
-        """display = *image mean variance dispersion sigma_b sigma_s threshold \
+        """display = *image mean variance dispersion sigma_b sigma_s threshold \\
           global_threshold
-  .help = None"""
+  .help = None\n
+new_value = 3
+
+"""
     )
 
 
