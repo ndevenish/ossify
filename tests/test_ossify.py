@@ -1,12 +1,13 @@
 import pytest
 from ossify import grammar
 from ossify.testutil import parse_string
+from tatsu.exceptions import ParseException
 
 # , parser_for
 
 
 def check_raises(content):
-    with pytest.raises(SyntaxError) as e:
+    with pytest.raises(ParseException) as e:
         parse_string(content)
     return str(e.value)
 

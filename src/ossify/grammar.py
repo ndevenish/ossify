@@ -7,6 +7,8 @@ from itertools import groupby
 from tokenize import TokenInfo
 from typing import Any, Iterable, List, NamedTuple, Sequence
 
+from tatsu.exceptions import SemanticError
+
 
 class ScopeName(NamedTuple):
     parts: List[str]
@@ -216,7 +218,7 @@ class TatsuSemantics:
         )
 
     def bad_option_keyword(self, ast):
-        raise SyntaxError(f"Unknown option parameter: {ast[0]}")
+        raise SemanticError(f"Unknown option parameter: {ast[0]}")
 
     def scope_options(self, ast):
         # scope_options
