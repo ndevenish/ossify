@@ -1,5 +1,4 @@
 import pytest
-
 from ossify import grammar
 from ossify.testutil import parse_string
 from tatsu.exceptions import ParseException
@@ -249,3 +248,21 @@ def test_scope_inline_options():
 .multiple = True {
 }"""
     )
+
+
+def test_short_string():
+    # Encountered case where string regex excluded empty strings
+    parse_string(
+        """
+  dark_stddev = ""
+  dark_adu_scale = "Mandatory scale at which dark was calculated; must be >1 on account of integer rounding."
+"""
+    )
+
+
+parse_string(
+    '''
+  dark_stddev = """"""
+  dark_adu_scale = "Mandatory scale at which dark was calculated; must be >1 on account of integer rounding."
+'''
+)
