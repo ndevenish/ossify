@@ -1,4 +1,5 @@
 import pytest
+
 from ossify import grammar
 from ossify.testutil import parse_string
 from tatsu.exceptions import ParseException
@@ -229,6 +230,10 @@ def test_include():
 # dials/test/algorithms/refinement/test_finite_diffs.py (67, 16)
 geometry.parameters.crystal.a.length.range = 10 15"""
     )
+    # !?!?!?!? include is _really_ broken
+    parse_string("include at start")
+    parse_string("include before command")
+    parse_string('include scope: python object "%s" in module "%s" is not a')
 
 
 def test_inline_quotes():

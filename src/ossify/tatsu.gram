@@ -25,6 +25,7 @@ scope_option = ["!"] "." name:OPTION_KEYWORD "=" value:valueexpr ;
 
 
 include =
+    | ["!"] "include" /.*(?:\n|\Z)/
     | ["!"] "include" "scope" scope_name {!WSNL scope_name}*
     | ["!"] "include" ["file"] value
     ;
