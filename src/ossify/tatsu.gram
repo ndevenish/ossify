@@ -54,7 +54,7 @@ value =
     ;
 
 # Comments in values must have a certain form
-VALUE_COMMENT = / # (?:.|\n)*?(?<!\\)(?=\n|\Z)/ ;
+VALUE_COMMENT = /[ \t]+# (?:.|\n)*?(?<!\\)(?=\n|\Z)/ ;
 # But things that look like comments but no space after are values
 VALUE_COMMENTLIKE = /[ \t]*#[^{};\s]+/ ;
 
